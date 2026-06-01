@@ -263,6 +263,7 @@ function generar_docx_desde_json(string $json_path): ?string {
         'node',
         'C:\\nvm4w\\nodejs\\node.exe',
     ] : [
+        '/home/u2686-msfhcggc1qfs/.nvm/versions/node/v20.20.2/bin/node',
         '/usr/bin/node',
         '/usr/local/bin/node',
         '/usr/local/nodejs/bin/node',       // SiteGround instalación manual
