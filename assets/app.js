@@ -50,6 +50,9 @@
 
         if (on) {
             btnLabel.textContent = 'Generando documento...';
+            // Ocultar stats de una generación anterior
+            const statsEl = document.getElementById('usage-stats');
+            if (statsEl) statsEl.classList.add('d-none');
             outputText.innerHTML = `
                 <div class="p-4 text-center">
                     <div class="spinner-border text-primary mb-3" role="status">
@@ -236,6 +239,7 @@
 
             if (data.type === 'files') {
                 displayDownloadLinks(data.files);
+                showUsageStats(data.usage, data.elapsed, data.model);
                 setLoading(false, true);
             } else {
                 // Respuesta de texto inesperada
@@ -258,6 +262,41 @@
             outputSection.classList.add('d-none');
         }
     });
+
+    // ── Mostrar stats de uso ──────────────────────────────────────────────────
+
+    function showUsageStats(usage, elapsed, model) {
+        const statsEl = document.getElementById('usage-stats');
+        if (!statsEl) return;
+
+        const inputEl   = document.getElementById('stat-input-tokens');
+        const outputEl  = document.getElementById('stat-output-tokens');
+        const elapsedEl = document.getElementById('stat-elapsed');
+        const modelEl   = document.getElementById('stat-model');
+
+        if (usage) {
+            if (inputEl)  inputEl.textContent  = (usage.input_tokens  || 0).toLocaleString('es');
+            if (outputEl) outputEl.textContent = (usage.output_tokens || 0).toLocaleString('es');
+        }
+
+        if (elapsedEl && elapsed != null) {
+            const secs = parseFloat(elapsed);
+            if (secs >= 60) {
+                const m = Math.floor(secs / 60);
+                const s = Math.round(secs % 60);
+                elapsedEl.textContent = `${m}m ${s}s`;
+            } else {
+                elapsedEl.textContent = `${secs}s`;
+            }
+        }
+
+        if (modelEl && model) {
+            modelEl.textContent = model;
+        }
+
+        statsEl.classList.remove('d-none');
+        statsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
     // ── Mostrar links de descarga ─────────────────────────────────────────────
 

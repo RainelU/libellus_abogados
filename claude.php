@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_override.php';
 
 /**
  * Llama a Claude con los file_ids de los PDFs ya subidos a la Files API.
@@ -42,10 +43,10 @@ function call_claude(string $skill_id, array $pdf_file_ids): array {
         'source' => ['type' => 'file', 'file_id' => JSON_FILE_REFERENCE],
     ];
 
-    // 3. Prompt estricto — solo JSON, sin markdown, sin texto extra
-    $content[] = [
-        'type' => 'text',
-        'text' => <<<'PROMPT'
+    // 3. Prompt — usa el global de admin si está definido, si no el por defecto
+    $admin_prompt = defined('ADMIN_CLAUDE_PROMPT') ? trim(ADMIN_CLAUDE_PROMPT) : '';
+
+    $default_prompt = <<<'PROMPT'
 You must output ONLY valid JSON. No markdown. No explanations. No reasoning. No comments. No text before or after the JSON.
 
 Use the last document (the JSON reference) as the canonical schema. Build a new JSON for the case described in the PDF documents. Follow these STRICT REQUIREMENTS:
@@ -65,10 +66,15 @@ Especially expand with dense legal argumentation (target ~8 printed pages):
 - Permanencia
 - Relación de causalidad
 - Ultima ratio
-- Conclusión
+- Conclusión. Output ONLY the raw JSON object. Start your response with { and end with }.
+PROMPT;
 
-Output ONLY the raw JSON object. Start your response with { and end with }.
-PROMPT
+    $active_prompt = $admin_prompt ?: $default_prompt;
+    error_log("Using prompt source: " . ($admin_prompt ? 'admin override' : 'default'));
+
+    $content[] = [
+        'type' => 'text',
+        'text' => $active_prompt,
     ];
 
     // ── Headers ──────────────────────────────────────────────────────────────
@@ -81,7 +87,7 @@ PROMPT
 
     // ── Payload ──────────────────────────────────────────────────────────────
     $payload_data = [
-        'model'      => CLAUDE_MODEL,
+        'model'      => defined('ADMIN_CLAUDE_MODEL') && ADMIN_CLAUDE_MODEL ? ADMIN_CLAUDE_MODEL : CLAUDE_MODEL,
         'max_tokens' => 20000,
         'messages'   => [['role' => 'user', 'content' => $content]],
     ];
@@ -154,12 +160,18 @@ PROMPT
         throw new RuntimeException($error_msg);
     }
 
-    // Loguear tokens
+    // Loguear y capturar tokens
+    $usage_data = [];
     if (!empty($data['usage'])) {
         $u = $data['usage'];
-        error_log("Tokens — input: " . ($u['input_tokens'] ?? 0) .
-                  ", output: " . ($u['output_tokens'] ?? 0) .
-                  ", cache_read: " . ($u['cache_read_input_tokens'] ?? 0));
+        $usage_data = [
+            'input_tokens'      => $u['input_tokens']            ?? 0,
+            'output_tokens'     => $u['output_tokens']           ?? 0,
+            'cache_read_tokens' => $u['cache_read_input_tokens'] ?? 0,
+        ];
+        error_log("Tokens — input: " . $usage_data['input_tokens'] .
+                  ", output: " . $usage_data['output_tokens'] .
+                  ", cache_read: " . $usage_data['cache_read_tokens']);
     }
 
     error_log("Stop reason: " . ($data['stop_reason'] ?? 'unknown'));
@@ -235,6 +247,9 @@ PROMPT
         ]],
         'json_saved' => $json_basename,
         'message'    => 'Documento generado exitosamente',
+        'usage'      => $usage_data,
+        'elapsed'    => $elapsed,
+        'model_used' => defined('ADMIN_CLAUDE_MODEL') && ADMIN_CLAUDE_MODEL ? ADMIN_CLAUDE_MODEL : CLAUDE_MODEL,
     ];
 }
 

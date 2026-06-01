@@ -1,1 +1,7 @@
 DirectoryIndex index.php
+
+# Bloquear acceso directo a archivos de configuración sensibles
+<FilesMatch "^(config\.php|config_override\.php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

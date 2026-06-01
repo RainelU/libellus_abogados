@@ -63,12 +63,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'type'    => 'files',
                     'files'   => $result['files'],
                     'message' => $result['message'],
+                    'usage'   => $result['usage']   ?? null,
+                    'elapsed' => $result['elapsed']  ?? null,
+                    'model'   => $result['model_used'] ?? null,
                 ]);
             } else {
                 echo json_encode([
                     'success' => true,
                     'type'    => 'text',
                     'content' => $result['content'] ?? '',
+                    'usage'   => $result['usage']   ?? null,
+                    'elapsed' => $result['elapsed']  ?? null,
+                    'model'   => $result['model_used'] ?? null,
                 ]);
             }
         } catch (RuntimeException $e) {
@@ -135,6 +141,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div id="output-section" class="d-none">
         <div id="output-text"></div>
+    </div>
+
+    <!-- ── Stats de uso (tokens + tiempo) ──────────────────────────────── -->
+    <div id="usage-stats" class="d-none mt-3">
+        <div class="card rounded-3 px-4 py-3">
+            <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="usage-stat">
+                        <span class="usage-label"><i class="bi bi-arrow-down-circle me-1"></i>Tokens entrada</span>
+                        <span class="usage-value" id="stat-input-tokens">—</span>
+                    </div>
+                    <div class="usage-divider"></div>
+                    <div class="usage-stat">
+                        <span class="usage-label"><i class="bi bi-arrow-up-circle me-1"></i>Tokens salida</span>
+                        <span class="usage-value" id="stat-output-tokens">—</span>
+                    </div>
+                    <div class="usage-divider"></div>
+                    <div class="usage-stat">
+                        <span class="usage-label"><i class="bi bi-clock me-1"></i>Tiempo</span>
+                        <span class="usage-value" id="stat-elapsed">—</span>
+                    </div>
+                </div>
+                <div class="usage-stat text-end">
+                    <span class="usage-label"><i class="bi bi-cpu me-1"></i>Modelo</span>
+                    <span class="usage-value usage-model" id="stat-model">—</span>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>

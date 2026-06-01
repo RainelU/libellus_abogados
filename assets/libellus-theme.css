@@ -212,3 +212,23 @@ div:has(> #attach-btn) {
   border-color: var(--lib-gold) !important;
   color: var(--lib-navy) !important;
 }
+
+/* ── Usage stats — Libellus theme ────────────────────────────────── */
+#usage-stats .card {
+  background: #faf7f0 !important;
+  border-color: var(--lib-border) !important;
+  border-radius: var(--lib-radius) !important;
+  box-shadow: none !important;
+}
+
+#usage-stats .usage-label {
+  color: var(--lib-muted) !important;
+}
+
+#usage-stats .usage-value {
+  color: var(--lib-navy) !important;
+}
+
+#usage-stats .usage-divider {
+  background: var(--lib-border) !important;
+}
