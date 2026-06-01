@@ -1,0 +1,15 @@
+{
+  "name": "libellus-generador",
+  "version": "1.0.0",
+  "description": "Generador de demandas laborales — Libellus",
+  "private": true,
+  "scripts": {
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "docx": "^9.5.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

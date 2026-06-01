@@ -1,0 +1,594 @@
+{
+    "_meta": {
+        "skill_version": "3.5",
+        "schema_version": "2.0",
+        "case_name": "Urtubia Gómez vs Fundación Educacional EHZ",
+        "creator": "Estudio Ferrada y Aravena",
+        "doc_title": "Demanda Urtubia Gómez contra Fundación Educacional EHZ",
+        "output_filename": "demanda_urtubia_vs_ehz.docx"
+    },
+    "formato": {
+        "font": "Times New Roman",
+        "size": 24,
+        "size_footer": 20,
+        "spacing": {
+            "line": 276,
+            "before": 0,
+            "after": 120
+        },
+        "spacing_tight": {
+            "line": 276,
+            "before": 0,
+            "after": 0
+        },
+        "single": {
+            "line": 240,
+            "before": 0,
+            "after": 0
+        },
+        "page": {
+            "size": {
+                "width": 12240,
+                "height": 18720
+            },
+            "margin": {
+                "top": 1134,
+                "right": 1134,
+                "bottom": 1134,
+                "left": 1134
+            }
+        }
+    },
+    "presuma": [
+        ["LOCALIDAD", "SAN MIGUEL"],
+        ["PROCEDIMIENTO", "PROCEDIMIENTO DE APLICACIÓN GENERAL U ORDINARIO"],
+        ["MATERIA", "DESPIDO IMPROCEDENTE, PRESTACIONES, DAÑO MORAL Y RECARGO LEGAL"],
+        ["DEMANDANTE", "SERGIO OMAR URTUBIA GÓMEZ"],
+        ["R.U.T.", "10.055.269-8"],
+        ["DOMICILIO", "ALMIRANTE PASTENE N° 185, OFICINA N° 809, COMUNA DE PROVIDENCIA, SANTIAGO"],
+        ["ABOGADO PATROCINANTE", "ALEX ANDRÉS FERRADA CISTERNAS"],
+        ["R.U.T.", "15.216.621-4"],
+        ["APODERADO 1", "RODOLFO LUIS ARAVENA BELTRÁN"],
+        ["R.U.T.", "13.955.615-1"],
+        ["APODERADO 2", "VÍCTOR ALONSO SANHUEZA MUÑOZ"],
+        ["R.U.T.", "15.590.161-6"],
+        ["DOMICILIOS", "ALMIRANTE PASTENE N° 185, OFICINA N° 809, COMUNA DE PROVIDENCIA, SANTIAGO"],
+        ["DEMANDADO", "FUNDACIÓN EDUCACIONAL EHZ"],
+        ["R.U.T.", "65.145.595-2"],
+        ["REPRESENTANTE LEGAL", "ALEJANDRO ELÍAS HASBÚN RAMÍREZ"],
+        ["R.U.T.", "8.826.434-7"],
+        ["DOMICILIO", "CARMEN MENA N° 882, COMUNA DE SAN MIGUEL"]
+    ],
+    "suma": [
+        {"label": "EN LO PRINCIPAL", "bold": true, "underline": true},
+        {"text": ": DEMANDA EN PROCEDIMIENTO DE APLICACIÓN GENERAL U ORDINARIO POR DESPIDO IMPROCEDENTE, PRESTACIONES Y OTRAS MATERIAS; "},
+        {"label": "PRIMER OTROSÍ", "bold": true, "underline": true},
+        {"text": ": ACOMPAÑA DOCUMENTOS; "},
+        {"label": "SEGUNDO OTROSÍ", "bold": true, "underline": true},
+        {"text": ": FORMA ESPECIAL DE NOTIFICACIÓN; "},
+        {"label": "TERCER OTROSÍ", "bold": true, "underline": true},
+        {"text": ": AUTORIZACIÓN COMPARECENCIA REMOTA; "},
+        {"label": "CUARTO OTROSÍ", "bold": true, "underline": true},
+        {"text": ": PATROCINIO Y PODER."}
+    ],
+    "tribunal_titulo": "S.J.L. DEL TRABAJO DE SAN MIGUEL",
+    "comparecencia": [
+        {"text": "ALEX ANDRÉS FERRADA CISTERNAS", "bold": true},
+        {"text": ", abogado, en nombre y representación procesal de "},
+        {"text": "SERGIO OMAR URTUBIA GÓMEZ", "bold": true},
+        {"text": ", R.U.T. 10.055.269-8, cesante, ambos domiciliados para estos efectos en Almirante Pastene N° 185, Oficina N° 809, Comuna de Providencia, Santiago, a US. respetuosamente digo:"}
+    ],
+    "introduccion": [
+        {"text": "Que, por este acto vengo en interponer "},
+        {"text": "demanda en procedimiento de aplicación general u ordinario por despido improcedente, prestaciones y otras materias", "bold": true},
+        {"text": ", en contra de mi ex empleadora "},
+        {"text": "FUNDACIÓN EDUCACIONAL EHZ", "bold": true},
+        {"text": ", R.U.T. 65.145.595-2, del giro de su denominación, sostenedora del Colegio Tomás Moro, representada legalmente conforme al artículo 4 del Código del Trabajo por don "},
+        {"text": "ALEJANDRO ELÍAS HASBÚN RAMÍREZ", "bold": true},
+        {"text": ", R.U.T. 8.826.434-7, ignoro profesión u oficio, o por quien tenga tal calidad en virtud de dicha norma, ambos domiciliados en Carmen Mena N° 882, Comuna de San Miguel; en razón de las siguientes consideraciones de hecho y de derecho que paso a exponer:"}
+    ],
+    "secciones": [
+        {
+            "letra": "A",
+            "titulo": "DE LOS ANTECEDENTES DE LA RELACIÓN LABORAL",
+            "romanos": [
+                [
+                    {"text": "nuestro representado "},
+                    {"text": "SERGIO OMAR URTUBIA GÓMEZ", "bold": true},
+                    {"text": " mantuvo una relación laboral con la empresa demandada "},
+                    {"text": "FUNDACIÓN EDUCACIONAL EHZ", "bold": true},
+                    {"text": ", prestando servicios desde el día "},
+                    {"text": "10 de abril de 2007", "bold": true},
+                    {"text": " hasta el día "},
+                    {"text": "28 de febrero de 2026", "bold": true},
+                    {"text": ", esto es, durante dieciocho años y diez meses ininterrumpidos."}
+                ],
+                [
+                    {"text": "nuestro representado prestó servicios bajo subordinación y dependencia en calidad de "},
+                    {"text": "ASISTENTE DE EDUCACIÓN", "bold": true},
+                    {"text": ", desempeñando sus labores en el establecimiento educacional Colegio Tomás Moro, RBD 11812-5, ubicado en Carmen Mena N° 882, Comuna de San Miguel, Región Metropolitana."}
+                ],
+                [
+                    {"text": "la duración de su contrato era de carácter "},
+                    {"text": "indefinido", "bold": true},
+                    {"text": "."}
+                ],
+                [
+                    {"text": "su jornada de trabajo era de cuarenta y cuatro horas semanales financiadas íntegramente por subvención general, distribuidas conforme al régimen ordinario del establecimiento educacional, en horario diurno de lunes a viernes."}
+                ],
+                [
+                    {"text": "su remuneración mensual para efectos del artículo 172 del Código del Trabajo ascendía a la suma total de "},
+                    {"text": "$763.229", "bold": true},
+                    {"text": ", monto que se desprende del propio finiquito ofrecido por la demandada y de la indemnización por años de servicio liquidada conforme al tope legal de once años."}
+                ]
+            ]
+        },
+        {
+            "letra": "B",
+            "titulo": "DE LOS ANTECEDENTES DEL DESPIDO",
+            "romanos": [
+                [
+                    {"text": "con fecha "},
+                    {"text": "28 de febrero de 2026", "bold": true},
+                    {"text": ", y mediante carta de aviso fechada el 12 de diciembre de 2025, la demandada puso término al contrato de nuestro representado, mediante su despido por la causal contemplada en el "},
+                    {"text": "artículo 161 inciso primero del Código del Trabajo", "bold": true},
+                    {"text": ", esto es, "},
+                    {"text": "\"necesidades de la empresa, establecimiento o servicio\"", "italics": true},
+                    {"text": "."}
+                ],
+                [
+                    {"text": "los hechos constitutivos de la causal invocada consistirían, según la carta, en un proceso de reestructuración institucional que la fundación demandada implementaría con el objeto de optimizar su funcionamiento pedagógico y administrativo, lo que se traduciría en una adecuación de la dotación de personal docente y no docente, en una redefinición de funciones, tareas y responsabilidades, en la implementación de innovaciones curriculares, metodológicas y de gestión académica, y en la creación de nuevos roles, todo ello presentado como derivado del legítimo ejercicio del derecho de organización y dirección del empleador conforme a los artículos 3° y 161 del Código del Trabajo."}
+                ],
+                [
+                    {"text": "desde ya, venimos en negar total y absolutamente la efectividad de los hechos constitutivos de la causal de término de contrato invocada por la empresa demandada y que estos tengan la aptitud legal necesaria para configurarla, sin perjuicio únicamente de aquello que se reconozca expresamente en lo sucesivo."
+                    }
+                ]
+            ]
+        },
+        {
+            "letra": "C",
+            "titulo": "DE LA ACCIÓN DE DESPIDO IMPROCEDENTE",
+            "acapites": [
+                {
+                    "titulo": "De las deficiencias de la comunicación del despido.",
+                    "romanos": [
+                        {
+                            "segmentos": [
+                                {"text": "de la lectura de la comunicación de despido referida en el acápite anterior, se desprende que la empresa demandada funda la causal en un alegado "},
+                                {"text": "\"proceso de reestructuración institucional orientado a optimizar su funcionamiento pedagógico y administrativo\"", "italics": true},
+                                {"text": ", que importaría "},
+                                {"text": "\"adecuar la actual dotación de personal docente y no docente, redefiniendo funciones, tareas y responsabilidades\"", "italics": true},
+                                {"text": ", invocando asimismo la "},
+                                {"text": "\"implementación de diversas innovaciones curriculares, metodológicas y de gestión académica\"", "italics": true},
+                                {"text": ", que supondrían una "},
+                                {"text": "\"redistribución de las cargas laborales y la creación de nuevos roles\"", "italics": true},
+                                {"text": ", todo ello presentado como manifestación del derecho de organización y dirección del empleador."}
+                            ]
+                        },
+                        {
+                            "segmentos": [
+                                {"text": "conforme al artículo 162 del Código del Trabajo, la carta de aviso de despido debe cumplir los requisitos de ser "},
+                                {"text": "circunstanciada, clara, completa, precisa y específica", "bold": true},
+                                {"text": ", exigencia formal cuya finalidad es permitir al trabajador comprender los hechos imputados y la causal invocada, a fin de preparar su demanda y en general ejercer adecuadamente el derecho que la ley le reconoce, según ha sido recogido por la doctrina y la jurisprudencia bajo la denominación de "},
+                                {"text": "teoría de la indefensión", "bold": true},
+                                {"text": ". La carta de autos no satisface ninguno de los cinco requisitos, según se argumentará en los párrafos siguientes."}
+                            ]
+                        },
+                        {
+                            "encabezado_custom": [
+                                {"text": "III. ", "bold": true},
+                                {"text": "Que la carta no es "},
+                                {"text": "completa", "bold": true},
+                                {"text": ", pues omite hechos esenciales que la causal del artículo 161 inciso primero del Código del Trabajo exigía comunicar al trabajador, a saber:"}
+                            ],
+                            "lista": [
+                                "1) los hechos económicos, técnicos, organizativos o productivos concretos que motivarían el proceso invocado, tales como pérdidas operacionales, caída de ingresos por subvención escolar, deterioro patrimonial, observaciones de la Superintendencia de Educación o cancelación de convenios con la autoridad sectorial;",
+                                "2) la situación de matrícula del establecimiento Colegio Tomás Moro al momento del despido y su evolución en los últimos ejercicios académicos, indicador propio del giro de la educación particular subvencionada y determinante del flujo de recursos vía subvención;",
+                                "3) la evolución de los ingresos por subvención general, Subvención Escolar Preferencial (SEP), Programa de Integración Escolar (PIE) y Subvención Pro Retención, ninguno de los cuales se nombra, cuantifica ni compara en la carta, pese a tratarse del giro propio del establecimiento sostenido por la demandada;",
+                                "4) los factores externos a la empresa que pudieran fundar el despido — decreto de autoridad pública, contracción del mercado de la educación particular subvencionada, ruptura de contratos significativos con terceros, cambio normativo sectorial o ajuste presupuestario de la línea ministerial pertinente;",
+                                "5) las medidas alternativas menos lesivas evaluadas previamente — feriados colectivos, permisos sin remuneración, reducciones de jornada, suspensiones temporales, capacitaciones de polivalencia, reasignaciones de funciones, traslados a otros colegios sostenidos por la misma fundación — y las gestiones de reubicación intentadas;",
+                                "6) las razones por las que el despido del actor — y no de otro asistente de educación o de otro trabajador con funciones equivalentes — resulta consecuencia necesaria del proceso invocado, esto es, el criterio de individualización utilizado para seleccionar a nuestro representado dentro de la dotación;",
+                                "7) el destino concreto de las funciones de asistente de educación que ejercía el actor, esto es, si fueron suprimidas en sentido material, redistribuidas entre otros funcionarios, absorbidas por cargos refundidos, externalizadas o automatizadas;",
+                                "8) la subsistencia o supresión efectiva del cargo de asistente de educación en el establecimiento donde el actor prestaba servicios, indicando si subsiste hoy bajo otra denominación o estructura, quién lo ocupa actualmente y bajo qué condiciones contractuales;",
+                                "9) la individualización del nuevo modelo organizacional al que se hace referencia genérica, sus documentos institucionales de respaldo, su fecha de aprobación por los órganos competentes de la fundación y su acto formal de implementación."
+                            ]
+                        },
+                        {
+                            "segmentos": [
+                                {"text": "la carta no es "},
+                                {"text": "precisa", "bold": true},
+                                {"text": ", pues los elementos que invoca carecen por completo de magnitudes verificables. La carta no contiene un solo dato cuantitativo: no menciona porcentajes, cifras de matrícula, montos de ingresos por subvención, déficits operacionales, períodos de comparación, indicadores presupuestarios ni indicador económico alguno que permita dimensionar lo que se dice estar ocurriendo. La empresa demandada se limita a enunciar en términos cualitativos genéricos un "},
+                                {"text": "\"proceso de reestructuración institucional\"", "italics": true},
+                                {"text": ", sin acompañar dicha enunciación de ninguna magnitud que admita verificación empírica, control intersubjetivo o contraste documental."}
+                            ],
+                            "tight": true
+                        },
+                        {
+                            "continuacion": true,
+                            "segmentos": [
+                                {"text": "Adviértase que la precisión exigida por el artículo 162 no constituye un mero rigorismo formal: es la garantía mínima de que el trabajador despedido podrá contrastar la causal invocada con la realidad económica y organizacional del establecimiento. Una carta que omite cifras, fechas y magnitudes deja al trabajador en la imposibilidad material de articular su defensa, pues lo obliga a litigar contra un enunciado abstracto sin parámetros susceptibles de prueba en contrario. Tal omisión configura precisamente la indefensión que la norma busca evitar."}
+                            ]
+                        },
+                        {
+                            "segmentos": [
+                                {"text": "la carta no es "},
+                                {"text": "específica", "bold": true},
+                                {"text": ", pues se construye sobre fórmulas categoriales aplicables en abstracto a cualquier integrante de la organización. La empresa demandada enuncia un proceso de reestructuración referido a la "},
+                                {"text": "\"actual dotación de personal docente y no docente\"", "italics": true},
+                                {"text": ", esto es, a la totalidad del cuerpo funcionario, pero no explica de qué manera dicha reestructuración impone la supresión específica del cargo de asistente de educación que ejercía nuestro representado, ni por qué el actor — y no otra persona con funciones equivalentes dentro del mismo establecimiento — debía ser desvinculado."}
+                            ],
+                            "tight": true
+                        },
+                        {
+                            "continuacion": true,
+                            "segmentos": [
+                                {"text": "Adicionalmente, la propia gramática de la carta nombra el supuesto de modo distinto al que la causal exige se comunique: la empresa demandada utiliza expresiones como "},
+                                {"text": "\"se ha estimado necesario adecuar\"", "italics": true},
+                                {"text": ", "},
+                                {"text": "\"se ha tomado la determinación\"", "italics": true},
+                                {"text": ", "},
+                                {"text": "\"la decisión adoptada por la dirección del establecimiento educacional\"", "italics": true},
+                                {"text": " y "},
+                                {"text": "\"legítimo ejercicio del derecho de organización y dirección del empleador\"", "italics": true},
+                                {"text": " — verbos y fórmulas que en su sola redacción nombran una decisión voluntaria adoptada por el propio empleador, en lugar de describir la circunstancia que se le impondría desde fuera y lo obligaría a poner término al contrato. La carta no individualiza al actor en relación con la causal: lo trata como ítem fungible de una dotación genérica, sin explicar la conexión específica entre el proceso y su despido particular."}
+                            ]
+                        },
+                        {
+                            "segmentos": [
+                                {"text": "la carta no es "},
+                                {"text": "clara", "bold": true},
+                                {"text": ", pues sus afirmaciones se contradicen lógicamente entre sí. La empresa demandada invoca simultáneamente una "},
+                                {"text": "\"redistribución de las cargas laborales\"", "italics": true},
+                                {"text": " y la "},
+                                {"text": "\"creación de nuevos roles que permitan alcanzar los objetivos institucionales\"", "italics": true},
+                                {"text": ", por una parte, y, por la otra, una pretendida supresión del cargo del actor por necesidades de la empresa."}
+                            ],
+                            "tight": true
+                        },
+                        {
+                            "continuacion": true,
+                            "segmentos": [
+                                {"text": "Ambas figuras son lógicamente excluyentes: si lo invocado es la redistribución de cargas laborales y la creación de nuevos roles, las funciones que ejercía el actor subsisten — sólo que reasignadas a otros trabajadores o reformuladas en nuevos cargos —, lo que descarta la supresión material del cargo y, en cambio, hacía exigible la reubicación del actor en alguno de esos roles. Si lo invocado, en cambio, es la supresión efectiva del cargo, no hay nada que \"redistribuir\" ni \"nuevos roles\" que crear, y la carta no describe en qué consistiría esa supresión. La empresa demandada queda atrapada en su propia ambigüedad — cualquiera sea la lectura que pretenda defender en juicio, la otra opera en su contra. La oscuridad no es accidental: es la consecuencia directa de no poder nombrar un hecho real, lo que obliga al redactor a multiplicar fórmulas vagas con la esperanza de que alguna de ellas resulte oponible."}
+                            ]
+                        },
+                        {
+                            "segmentos": [
+                                {"text": "la carta no es "},
+                                {"text": "circunstanciada", "bold": true},
+                                {"text": ", pues los elementos que sí menciona carecen, entre otros, de las "},
+                                {"text": "referencias temporales y espaciales", "bold": true},
+                                {"text": " necesarias para verificarlos empíricamente."}
+                            ],
+                            "tight": true
+                        },
+                        {
+                            "continuacion": true,
+                            "segmentos": [
+                                {"text": "En el plano temporal, la empresa demandada no ubica el proceso invocado en coordenadas verificables: no señala cuándo se inició la reestructuración, en qué fase se encontraba al momento del despido, ni cuál sería su horizonte de implementación. Tampoco identifica el período de evolución de los indicadores institucionales que justificarían la decisión, ni nombra ejercicio académico, semestre lectivo, ni hito normativo o presupuestario alguno. En el plano espacial, la carta no individualiza con precisión qué áreas de la fundación o qué dependencias del establecimiento educacional resultarían afectadas, ni distingue entre cargos docentes y no docentes, ni nombra el ciclo, sección o servicio del Colegio Tomás Moro donde la pretendida adecuación de la dotación operaría materialmente sobre el cargo del actor. Tampoco describe el modo en que el proceso de reestructuración opera materialmente sobre la organización concreta del establecimiento — qué procesos modifica, qué mecánica institucional reemplaza, qué funciones reordena de modo verificable más allá del enunciado nominal y abstracto del nuevo modelo organizacional. La ausencia de circunstanciación impide al tribunal y al trabajador situar la causal en una realidad fáctica concreta, condenándola a permanecer como mero enunciado nominal."}
+                            ]
+                        },
+                        {
+                            "segmentos": [
+                                {"text": "en virtud del principio de "},
+                                {"text": "congruencia fáctica", "bold": true},
+                                {"text": ", la empresa demandada ha quedado procesalmente constreñida al pobre contenido de su carta de aviso, no pudiendo alegar en el juicio hechos distintos como justificativos del despido (artículo 454 N° 1 inciso segundo del Código del Trabajo) y, por lo mismo, le está vedado completarla mediante la contestación. La carta debe ser "},
+                                {"text": "autosuficiente", "bold": true},
+                                {"text": ", según la línea jurisprudencial consolidada de la Excelentísima Corte Suprema en sede de unificación. Cualquier hecho nuevo, cifra, documento o explicación que la demandada pretenda introducir en juicio para colmar las omisiones de la carta es procesalmente inoponible al actor y debe ser desestimado por US., bajo pena de subvertir la garantía formal del artículo 162."}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "titulo": "De la improcedencia del despido.",
+                    "apertura": {
+                        "encabezado_custom": [
+                            {"text": "I. ", "bold": true},
+                            {"text": "Que la causal de necesidades de la empresa exige la concurrencia copulativa de tres requisitos:"}
+                        ],
+                        "lista_inline": [
+                            [
+                                {"text": "1) "},
+                                {"text": "motivo causal económico, técnico, organizativo o productivo", "bold": true},
+                                {"text": ";"}
+                            ],
+                            [
+                                {"text": "2) "},
+                                {"text": "necesidad empresarial objetiva, externa, grave, permanente y ajena", "bold": true},
+                                {"text": "; y"}
+                            ],
+                            [
+                                {"text": "3) "},
+                                {"text": "relación de causalidad entre la necesidad empresarial y el despido de la persona del trabajador", "bold": true},
+                                {"text": "."}
+                            ]
+                        ],
+                        "cierre": [
+                            {"text": "Los hechos invocados, hipotéticamente, en el supuesto de ser efectivos y/o de acreditarse, no satisfacen ninguno de los tres requisitos copulativos en el plano sustantivo, configurándose la improcedencia del despido, según se argumentará en los párrafos siguientes:"}
+                        ]
+                    },
+                    "sub_acapites": [
+                        {
+                            "titulo": "Motivo causal económico, técnico, organizativo o productivo.",
+                            "romanos": [
+                                {
+                                    "segmentos": [
+                                        {"text": "los hechos invocados, valga lo que valga su acreditación, "},
+                                        {"text": "no configuran motivo causal", "bold": true},
+                                        {"text": " en ninguna de las cuatro categorías alternativas que la causal admite (económica, técnica, organizativa o productiva). El llamado proceso de reestructuración institucional constituye una redefinición voluntaria de la organización interna del proyecto educativo de la propia fundación, presentada por la empresa demandada como "},
+                                        {"text": "\"legítimo ejercicio del derecho de organización y dirección del empleador\"", "italics": true},
+                                        {"text": " — esto es, una decisión de gestión adoptada en uso de la discrecionalidad institucional, no un supuesto fáctico que la causal admita."}
+                                    ],
+                                    "tight": true
+                                },
+                                {
+                                    "continuacion": true,
+                                    "segmentos": [
+                                        {"text": "Esta clase de decisión queda fuera del tipo legal en sus cuatro modalidades: no es "},
+                                        {"text": "motivo causal económico", "bold": true},
+                                        {"text": ", pues no es hecho económico sino decisión organizacional voluntaria — la carta no invoca pérdidas, déficits, contracción de ingresos por subvención ni indicador económico alguno; no es "},
+                                        {"text": "motivo causal técnico", "bold": true},
+                                        {"text": ", pues no hay transformación técnica de los procesos del establecimiento, ni introducción de tecnologías que sustituyan funciones humanas, ni cambio de infraestructura que altere el modo en que se imparte la educación; no es "},
+                                        {"text": "motivo causal organizativo", "bold": true},
+                                        {"text": ", pues no hay reorganización impuesta de los medios materiales o humanos del proyecto educativo sino reconfiguración voluntaria del modelo institucional adoptada al amparo de la autonomía del sostenedor; y no es "},
+                                        {"text": "motivo causal productivo", "bold": true},
+                                        {"text": ", pues la educación particular subvencionada no opera bajo la lógica de ajuste de capacidad productiva al mercado, sino bajo un esquema regulado de financiamiento por matrícula y asistencia."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "en consecuencia, y aun aceptando hipotéticamente la efectividad de lo invocado, ello carece de la entidad causal propia del artículo 161 inciso primero. Se trata de una decisión de gestión empresarial ordinaria del proyecto educativo, perteneciente al ámbito de la discrecionalidad del empresario en la configuración de su modelo institucional, no de un supuesto fáctico de los que la causal admite. La causal de necesidades de la empresa no fue concebida por el legislador como instrumento para externalizar al trabajador el costo de las decisiones estratégicas voluntarias del empleador; admitir lo contrario equivaldría a convertir la causal en una vía de despido libre encubierta, contraria al principio de estabilidad en el empleo y a la propia ratio del artículo 161."}
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "titulo": "Necesidad empresarial objetiva, externa, grave, permanente y ajena.",
+                            "romanos": [
+                                {
+                                    "segmentos": [
+                                        {"text": "los hechos invocados no configuran "},
+                                        {"text": "necesidad objetiva", "bold": true},
+                                        {"text": " alguna, pues no obedecen a una situación ajena e independiente de la voluntad, gestión y arbitrio del empleador, sino a circunstancias imputables a su propia administración y riesgo empresarial. El proceso de reestructuración institucional es, por su propia formulación literal en la carta, una construcción decisional del empleador — la propia comunicación lo enmarca como "},
+                                        {"text": "\"legítimo ejercicio del derecho de organización y dirección\"", "italics": true},
+                                        {"text": " —, lo que excluye de raíz la objetividad que el requisito demanda. El riesgo del giro educativo pertenece a quien lucra con él y no admite ser trasladado al trabajador, ajeno por esencia a las decisiones de gestión institucional de la corporación demandada."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "en igual línea, los hechos invocados tampoco configuran "},
+                                        {"text": "necesidad empresarial externa", "bold": true},
+                                        {"text": ". La causal del artículo 161 inciso primero no protege la elección estratégica del empleador frente a sus propias decisiones de gestión; protege a éste frente a hechos económicos, técnicos, organizativos o productivos externos que se le impongan desde fuera y lo obliguen a poner término al contrato. La reestructuración institucional invocada, la adecuación de la dotación de personal y la creación de nuevos roles son operaciones internas que la propia fundación decide e implementa en ejercicio de su autonomía como sostenedora del Colegio Tomás Moro. La causa así nombrada no proviene de decreto de autoridad pública, contracción del mercado, ruptura de contratos significativos con terceros ni cambio normativo o tecnológico sectorial — proviene de la propia voluntad del empleador, lo que la sitúa fuera del tipo legal del requisito de externalidad."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "tampoco se configura "},
+                                        {"text": "necesidad empresarial grave", "bold": true},
+                                        {"text": ". La línea jurisprudencial consolidada de la Excelentísima Corte Suprema, en sede de unificación, exige que la situación invocada ponga en peligro la "},
+                                        {"text": "estabilidad económica, la solvencia o la subsistencia", "bold": true},
+                                        {"text": " del proyecto empresarial — y excluye expresamente "},
+                                        {"text": "el afán de maximizar utilidades, la mera rebaja en las ganancias, el pasajero mal estado económico y la crisis ordinaria del empresario", "italics": true},
+                                        {"text": ". La carta de la empresa demandada no invoca, ni siquiera de manera tangencial, peligro alguno para la estabilidad económica, la solvencia o la subsistencia del proyecto educativo."}
+                                    ],
+                                    "tight": true
+                                },
+                                {
+                                    "continuacion": true,
+                                    "segmentos": [
+                                        {"text": "No menciona pérdidas, déficits, caída de ingresos por subvención general, SEP, PIE o Pro Retención, riesgo presupuestario, observaciones de la Superintendencia de Educación, advertencias del Ministerio de Educación, ni amenaza institucional de naturaleza alguna. Una decisión organizacional voluntaria — adoptada en ejercicio de la propia discrecionalidad y orientada, en palabras de la carta, a \"optimizar el funcionamiento pedagógico y administrativo\" — carece por completo de aptitud para configurar gravedad sustantiva. La optimización es propósito legítimo de toda administración, pero no es necesidad grave en términos del artículo 161: equivale precisamente al \"afán de maximizar\" que la jurisprudencia descarta como insuficiente."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "en cuanto al requisito de "},
+                                        {"text": "permanencia", "bold": true},
+                                        {"text": ", los hechos invocados igualmente no se configuran, toda vez que no constituyen una situación duradera, estable e irreversible, sino una contingencia coyuntural, transitoria o reversible. El proceso de reestructuración institucional carece de la actualidad que el requisito reclama: se trata de un proceso en curso de implementación, presentado como expectativa de gestión proyectada al futuro, no de una necesidad empresarial actual y permanente al momento del despido del actor. Una optimización institucional anunciada para operar con posterioridad al despido del trabajador no es necesidad presente sino contingencia diferida, y como tal queda fuera del tipo legal. La permanencia exige que la causa haya operado materialmente ya al momento del término del contrato, no que se proyecte como horizonte futuro de gestión."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "finalmente, los hechos invocados no satisfacen el requisito de "},
+                                        {"text": "ajenidad", "bold": true},
+                                        {"text": ", entendido como la independencia absoluta de la situación respecto de la voluntad, gestión y arbitrio del empleador. La reestructuración invocada es, por definición, un acto de voluntad de la propia fundación demandada, adoptado por sus órganos de dirección en ejercicio de sus facultades estatutarias. No hay nada ajeno en una decisión que la propia carta describe como manifestación del derecho de organización del empleador. Admitir esta clase de \"necesidad autoinducida\" como configurativa del artículo 161 vaciaría de contenido el requisito y permitiría al empleador fabricar su propia causal mediante el simple expediente de redefinir su modelo organizacional."}
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "titulo": "Relación de causalidad entre la necesidad empresarial y el despido de la persona del trabajador.",
+                            "romanos": [
+                                {
+                                    "segmentos": [
+                                        {"text": "los hechos invocados, en la hipótesis tratada, "},
+                                        {"text": "no configuran la relación de causalidad concreta", "bold": true},
+                                        {"text": " que la causal exige respecto del trabajador particular. Existe una "},
+                                        {"text": "distancia conceptual", "bold": true},
+                                        {"text": " irreductible entre el enunciado abstracto de un proceso de reestructuración institucional y el despido de un asistente de educación con casi diecinueve años continuos de servicio en el establecimiento: ninguno de los hechos invocados — adecuación de dotación, redefinición de funciones, creación de nuevos roles — impone jurídicamente la desvinculación de nuestro representado como consecuencia necesaria e indispensable."}
+                                    ],
+                                    "tight": true
+                                },
+                                {
+                                    "continuacion": true,
+                                    "segmentos": [
+                                        {"text": "Un proceso de reestructuración institucional puede implementarse a través de múltiples vías que no requieren poner término a contratos individuales — y la elección de despedir a nuestro representado, antes que reasignarlo a uno de los nuevos roles creados, redistribuirle funciones, capacitarlo en polivalencia o redefinirle responsabilidades, es discrecionalidad pura del empleador, no causalidad concreta de la situación invocada. La carta no explica por qué, dentro de una dotación que se afirma estar siendo \"redefinida\", el actor debía ser separado y no reubicado; tampoco identifica los criterios objetivos y verificables de selección que habrían conducido a recaer la decisión sobre su persona."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "los hechos invocados tampoco satisfacen la causalidad en su dimensión de "},
+                                        {"text": "ultima ratio", "bold": true, "italics": true},
+                                        {"text": ". Ante un proceso de reestructuración institucional que, según la propia carta, comprende la \"creación de nuevos roles\" y la \"redistribución de las cargas laborales\", las medidas alternativas menos lesivas son "},
+                                        {"text": "conceptualmente disponibles", "bold": true},
+                                        {"text": " por naturaleza: capacitaciones de polivalencia que reasignen al asistente a los nuevos roles, redistribuciones de carga laboral que conserven el contrato, reasignaciones de funciones dentro del mismo establecimiento, traslados a otros colegios sostenidos por la fundación, feriados colectivos, permisos sin remuneración y demás medidas que conservan la relación laboral mientras se ejecuta la reestructuración."}
+                                    ],
+                                    "tight": true
+                                },
+                                {
+                                    "continuacion": true,
+                                    "segmentos": [
+                                        {"text": "La separación del trabajador no es "},
+                                        {"text": "última opción indispensable", "bold": true},
+                                        {"text": "; es una entre muchas vías posibles, y por lejos la más lesiva. El principio de ultima ratio, derivado del deber de buena fe y del principio protector del derecho del trabajo, impone al empleador la carga de acreditar haber agotado las medidas razonables menos gravosas antes de recurrir al despido — carga que la carta de autos no satisface en absoluto, pues no menciona una sola gestión de reubicación, una sola oferta de reasignación, una sola medida intermedia ofrecida y rechazada por el actor. La omisión es elocuente: revela que la opción del despido fue inmediata, no última."}
+                                    ]
+                                },
+                                {
+                                    "segmentos": [
+                                        {"text": "a mayor abundamiento, la antigüedad de nuestro representado — dieciocho años y diez meses ininterrumpidos al servicio del mismo establecimiento — agravaba intensamente la exigencia de razonabilidad en la elección del despedido. La causal del artículo 161 inciso primero no autoriza al empleador a prescindir indiscriminadamente del trabajador antiguo en pro de una reorganización voluntaria: cuanto mayor es la antigüedad y la integración del trabajador al proyecto, más exigente es el estándar de causalidad concreta que debe cumplirse. Aquí, ese estándar no ha sido mínimamente satisfecho."}
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "titulo": "De la conclusión.",
+                    "romanos": [
+                        [
+                            {"text": "el despido constituye un "},
+                            {"text": "acto jurídico unilateral", "bold": true},
+                            {"text": " del empleador, de naturaleza "},
+                            {"text": "formal y no recepticia", "bold": true},
+                            {"text": ", sujeto a un estricto control de legalidad y al cumplimiento copulativo de requisitos de "},
+                            {"text": "forma", "bold": true},
+                            {"text": " y de "},
+                            {"text": "fondo", "bold": true},
+                            {"text": ", cuya omisión puede devenir en que sea injustificado, indebido o improcedente según la causal invocada, o incluso incausado."}
+                        ],
+                        [
+                            {"text": "en cuanto a la "},
+                            {"text": "forma", "bold": true},
+                            {"text": ", la carta de aviso de despido de marras es deficiente en sus cinco requisitos del artículo 162 del Código del Trabajo — no es completa, no es precisa, no es específica, no es clara y no es circunstanciada —, según se argumentó en el acápite respectivo, dejando a la empresa demandada procesalmente constreñida a su pobre contenido por aplicación del artículo 454 N° 1 inciso segundo del mismo código."}
+                        ],
+                        [
+                            {"text": "en cuanto al "},
+                            {"text": "fondo", "bold": true},
+                            {"text": ", los hechos invocados — hipotéticamente, en el supuesto de ser efectivos y/o de acreditarse — no configuran ninguno de los tres requisitos copulativos del artículo 161 inciso primero: no constituyen motivo causal económico, técnico, organizativo o productivo; no constituyen necesidad objetiva, externa, grave, permanente ni ajena; y no guardan relación de causalidad concreta con el despido del actor ni satisfacen el principio de ultima ratio."}
+                        ],
+                        [
+                            {"text": "en consecuencia, el despido de nuestro representado es "},
+                            {"text": "IMPROCEDENTE", "bold": true},
+                            {"text": " por incumplimiento de requisitos de forma y de fondo, con todas las consecuencias indemnizatorias que de ello se derivan conforme a los artículos 168 y siguientes del Código del Trabajo."}
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "letra": "D",
+            "titulo": "DE LA ACCIÓN DE DAÑO MORAL",
+            "romanos": [
+                [
+                    {"text": "el despido injustificado de nuestro representado le ha ocasionado un daño moral cierto y resarcible, consistente en la "},
+                    {"text": "angustia, aflicción y menoscabo personal", "bold": true},
+                    {"text": " derivados de la pérdida intempestiva e injusta de su fuente laboral, tras "},
+                    {"text": "dieciocho años y diez meses", "bold": true},
+                    {"text": " continuos de servicio como asistente de educación al proyecto educativo de la empresa demandada en el Colegio Tomás Moro."}
+                ],
+                [
+                    {"text": "la pérdida del trabajo no se traduce únicamente en un perjuicio patrimonial cuantificable en remuneraciones e indemnizaciones, sino también en una "},
+                    {"text": "afectación al proyecto de vida, a la estabilidad emocional y a la autoestima", "bold": true},
+                    {"text": " de quien se ha visto privado, sin causa que lo justifique, de la actividad que constituye fuente de su sustento y de su realización personal — afectación particularmente intensa en el caso del actor, asistente de educación con casi diecinueve años continuos de servicio en el mismo establecimiento educacional, identificado con su proyecto pedagógico y con su comunidad escolar, separado abruptamente de la única fuente laboral que conocía mediante una causal carente de sustento fáctico real."}
+                ],
+                [
+                    {"text": "tal afectación constituye un perjuicio extrapatrimonial autónomo y debe ser reparada en sede judicial, sin que su reparación quede subsumida en las indemnizaciones tarifadas del Código del Trabajo, conforme a la doctrina jurisprudencial consolidada que reconoce la procedencia del daño moral en sede laboral cuando concurren circunstancias de especial menoscabo, como en la especie acontece atendida la antigüedad del trabajador, la condición de cesantía sobrevenida a edad madura y la falsedad de los motivos invocados en la carta."}
+                ]
+            ]
+        }
+    ],
+    "petitorio": {
+        "titulo_seccion": {
+            "letra": "E",
+            "titulo": "DE LAS PETICIONES CONCRETAS"
+        },
+        "por_tanto": [
+            {"text": "POR TANTO,", "bold": true},
+            {"text": " en mérito de lo expuesto y lo previsto en los artículos 1, 2, 4, 5, 7, 8, 9, 10, 63, 161 inciso 1°, 162, 163, 168, 169, 172, 173, 177, 420, 423, 425, 446 y 454 N° 1 del Código del Trabajo; Código de Procedimiento Civil y demás normas legales pertinentes,"}
+        ],
+        "ruego": [
+            {"text": "RUEGO A US.:", "bold": true},
+            {"text": " TENER POR INTERPUESTA, EN PROCEDIMIENTO DE APLICACIÓN GENERAL U ORDINARIO, DEMANDA POR DESPIDO IMPROCEDENTE, PRESTACIONES Y RECARGO LEGAL, EN CONTRA DE "},
+            {"text": "FUNDACIÓN EDUCACIONAL EHZ", "bold": true},
+            {"text": ", REPRESENTADA LEGALMENTE POR DON "},
+            {"text": "ALEJANDRO ELÍAS HASBÚN RAMÍREZ", "bold": true},
+            {"text": ", AMBAS YA INDIVIDUALIZADAS, "},
+            {"text": "O POR QUIEN TENGA TAL CALIDAD EN VIRTUD DEL ARTÍCULO 4 DEL CÓDIGO DEL TRABAJO", "bold": true},
+            {"text": "; Y, EN DEFINITIVA, DECLARAR:"}
+        ],
+        "declaraciones": [
+            [
+                {"text": "I. ", "bold": true},
+                {"text": "Que, se acoge la demanda en todas sus partes."}
+            ],
+            [
+                {"text": "II. ", "bold": true},
+                {"text": "Que, el despido de autos es o (fue) "},
+                {"text": "IMPROCEDENTE", "bold": true},
+                {"text": "."}
+            ],
+            [
+                {"text": "III. ", "bold": true},
+                {"text": "Que, se condene, "},
+                {"text": "con costas", "bold": true},
+                {"text": ", a la demandada a pagar al demandante las siguientes sumas de dinero:"}
+            ]
+        ],
+        "peticiones_monetarias": [
+            [
+                {"text": "1) $", "bold": true},
+                {"text": "2.518.656", "bold": true},
+                {"text": " por concepto del recargo legal del treinta por ciento (30%) establecido en el artículo 168 letra a) del Código del Trabajo."}
+            ],
+            [
+                {"text": "2) $", "bold": true},
+                {"text": "5.571.344", "bold": true},
+                {"text": " por concepto de daño moral."}
+            ],
+            [
+                {"text": "3) ", "bold": true},
+                {"text": "Los incrementos correspondientes a los "},
+                {"text": "reajustes e intereses legales", "bold": true},
+                {"text": " respectivos."}
+            ]
+        ],
+        "en_subsidio": [
+            {"text": "EN SUBSIDIO,", "bold": true},
+            {"text": " acoger la demanda respecto de las acciones, indemnizaciones, recargos y prestaciones que US. determine, por las sumas mayores o menores que resulten conforme al mérito de autos, siempre con expresa "},
+            {"text": "condenación en costas", "bold": true},
+            {"text": "."}
+        ]
+    },
+    "otrosies": [
+        {
+            "label": "PRIMER OTROSÍ:",
+            "segmentos": [
+                {"text": " RUEGO A US. tener por acompañados, con citación y bajo el apercibimiento legal, los siguientes documentos: 1) carta de aviso de término de contrato de trabajo de fecha 12 de diciembre de 2025; 2) finiquito de contrato de trabajo suscrito ante notario con fecha 28 de febrero de 2026; 3) liquidaciones de remuneraciones del último año de la relación laboral; y 4) el mandato judicial respectivo."}
+            ]
+        },
+        {
+            "label": "SEGUNDO OTROSÍ:",
+            "segmentos": [
+                {"text": " RUEGO A US. tener por señalada como forma de notificación de las resoluciones que se dicten en esta causa, los siguientes correos electrónicos: aferrada@ferradayaravena.cl, raravena@ferradayaravena.cl, vsanhueza@ferradayaravena.cl y tramitacion@ferradayaravena.cl."}
+            ]
+        },
+        {
+            "label": "TERCER OTROSÍ:",
+            "segmentos": [
+                {"text": " RUEGO A US., desde ya, autorización de conformidad al artículo 427 bis del Código del Trabajo para que los abogados de esta parte comparezcan de manera remota o telemática por videoconferencia a la audiencia preparatoria. Asimismo, para los efectos del inciso segundo de la misma norma, designo como medio de contacto los correos electrónicos indicados en el otrosí precedente."}
+            ]
+        },
+        {
+            "label": "CUARTO OTROSÍ:",
+            "segmentos": [
+                {"text": " RUEGO A US. tener presente que patrocina la presente causa el abogado "},
+                {"text": "ALEX ANDRÉS FERRADA CISTERNAS", "bold": true},
+                {"text": ", asumiendo poder con los abogados de mismo domicilio don "},
+                {"text": "RODOLFO LUIS ARAVENA BELTRÁN", "bold": true},
+                {"text": " y don "},
+                {"text": "VÍCTOR ALONSO SANHUEZA MUÑOZ", "bold": true},
+                {"text": ", en forma conjunta, separada e indistintamente en todas las etapas del proceso, con todas y cada una de las facultades de ambos incisos del artículo 7 del Código de Procedimiento Civil, que doy por íntegramente reproducidas, incluidas las facultades de "},
+                {"text": "avenir, transigir y percibir", "bold": true},
+                {"text": "."}
+            ]
+        }
+    ]
+}

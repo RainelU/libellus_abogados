@@ -1,71 +1,112 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-function call_claude(string $skill_id, string $user_input, array $pdf_attachments = []): array {
-    // Configuración de límites
+/**
+ * Llama a Claude con los file_ids de los PDFs ya subidos a la Files API.
+ * Claude devuelve SOLO JSON (sin markdown, sin explicaciones).
+ * El .docx se genera localmente ejecutando generar_demanda.js con Node.js.
+ *
+ * @param  string $skill_id      ID del skill seleccionado en la UI
+ * @param  array  $pdf_file_ids  IDs de la Files API de Anthropic
+ * @return array  ['success', 'type', 'files', 'json_saved', 'message']
+ */
+function call_claude(string $skill_id, array $pdf_file_ids): array {
     ini_set('memory_limit', '2G');
     set_time_limit(0);
     ini_set('max_execution_time', 0);
     ini_set('default_socket_timeout', 0);
-    
+
     error_log("=== Claude API Call Started ===");
     error_log("Timestamp: " . date('Y-m-d H:i:s'));
     error_log("Skill ID: $skill_id");
-    error_log("PDF attachments: " . count($pdf_attachments));
-    
-    // Construir contenido con PDFs
+    error_log("PDF file_ids recibidos: " . count($pdf_file_ids));
+
+    if (empty($pdf_file_ids)) {
+        throw new RuntimeException('Se requiere al menos un PDF para generar la demanda.');
+    }
+
+    // ── Construir content ────────────────────────────────────────────────────
     $content = [];
-    foreach ($pdf_attachments as $idx => $pdf) {
+
+    // 1. PDFs del caso (ya subidos por upload.php)
+    foreach ($pdf_file_ids as $fid) {
         $content[] = [
             'type'   => 'document',
-            'source' => [
-                'type'       => 'base64',
-                'media_type' => 'application/pdf',
-                'data'       => $pdf['data'],
-            ],
+            'source' => ['type' => 'file', 'file_id' => $fid],
         ];
     }
-    
-    // Headers de la API
-    $beta = ['skills-2025-10-02', 'code-execution-2025-08-25', 'files-api-2025-04-14'];
-    if (!empty($pdf_attachments)) {
-        $beta[] = 'pdfs-2024-09-25';
-    }
-    
+
+    // 2. JSON de referencia canónico (schema fijo en la Files API)
+    $content[] = [
+        'type'   => 'document',
+        'source' => ['type' => 'file', 'file_id' => JSON_FILE_REFERENCE],
+    ];
+
+    // 3. Prompt estricto — solo JSON, sin markdown, sin texto extra
+    $content[] = [
+        'type' => 'text',
+        'text' => <<<'PROMPT'
+You must output ONLY valid JSON. No markdown. No explanations. No reasoning. No comments. No text before or after the JSON.
+
+Use the last document (the JSON reference) as the canonical schema. Build a new JSON for the case described in the PDF documents. Follow these STRICT REQUIREMENTS:
+
+1. Preserve every key, array, nesting level and field name exactly as in the reference.
+2. Never remove fields. Never invent new top-level fields.
+3. Replace only the case-specific values using the data from the PDF documents.
+4. Maintain full legal consistency across all sections.
+5. Set _meta.output_filename to a safe filename like "demanda_<apellido_demandante>_vs_<apellido_demandado>.docx".
+
+Especially expand with dense legal argumentation (target ~8 printed pages):
+- Deficiencias de la comunicación del despido (all 5 sub-requirements: completa, precisa, específica, clara, circunstanciada)
+- Motivo causal económico, técnico, organizativo o productivo
+- Necesidad empresarial objetiva
+- Externalidad
+- Gravedad
+- Permanencia
+- Relación de causalidad
+- Ultima ratio
+- Conclusión
+
+Output ONLY the raw JSON object. Start your response with { and end with }.
+PROMPT
+    ];
+
+    // ── Headers ──────────────────────────────────────────────────────────────
     $headers = [
-        'x-api-key: ' . ANTHROPIC_API_KEY,
+        'x-api-key: '        . ANTHROPIC_API_KEY,
         'anthropic-version: 2023-06-01',
         'content-type: application/json',
-        'anthropic-beta: ' . implode(',', $beta),
+        'anthropic-beta: skills-2025-10-02,code-execution-2025-08-25,files-api-2025-04-14',
     ];
-    
-    // Configuración del skill y herramientas
-    $container = [
-        'skills' => [
-            ['type' => 'custom', 'skill_id' => $skill_id, 'version' => 'latest'],
-        ],
-    ];
-    
-    $tools = [
-        ['type' => 'code_execution_20260120', 'name' => 'code_execution'],
-    ];
-    
-    // Construir payload
-    $payload = json_encode([
+
+    // ── Payload ──────────────────────────────────────────────────────────────
+    $payload_data = [
         'model'      => CLAUDE_MODEL,
-        'max_tokens' => 100000,
-        'container'  => $container,
-        'tools'      => $tools,
+        'max_tokens' => 20000,
         'messages'   => [['role' => 'user', 'content' => $content]],
-    ]);
-    
-    $payload_size = strlen($payload);
-    error_log("Payload size: " . number_format($payload_size) . " bytes (" . round($payload_size/1024/1024, 2) . " MB)");
+    ];
+
+    // Incluir el skill si se proporcionó uno
+    if ($skill_id) {
+        $payload_data['container'] = [
+            'skills' => [
+                ['type' => 'custom', 'skill_id' => $skill_id, 'version' => 'latest'],
+            ],
+        ];
+
+        $payload_data['tools'] = [
+            ['type' => 'code_execution_20250825', "name" => "code_execution"],
+        ];
+    }
+
+    $payload = json_encode($payload_data);
+
+    error_log("Payload size: " . number_format(strlen($payload)) . " bytes");
     error_log("Sending request to Claude API...");
-    
+
     $start_time = microtime(true);
-    
-    // Configurar CURL
+
+    // ── cURL ─────────────────────────────────────────────────────────────────
     $ch = curl_init('https://api.anthropic.com/v1/messages');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
@@ -85,202 +126,268 @@ function call_claude(string $skill_id, string $user_input, array $pdf_attachment
         CURLOPT_NOSIGNAL       => 1,
         CURLOPT_BUFFERSIZE     => 16384,
     ]);
-    
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    $response   = curl_exec($ch);
+    $http_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curl_error = curl_error($ch);
     $curl_errno = curl_errno($ch);
-    $curl_info = curl_getinfo($ch);
     curl_close($ch);
-    
-    $elapsed_time = round(microtime(true) - $start_time, 2);
-    $response_size = strlen($response);
-    
-    error_log("Response received in {$elapsed_time}s");
-    error_log("HTTP Code: $http_code");
-    error_log("Response size: " . number_format($response_size) . " bytes (" . round($response_size/1024, 2) . " KB)");
-    
-    // Manejar errores de CURL
+
+    $elapsed = round(microtime(true) - $start_time, 2);
+    error_log("Response in {$elapsed}s — HTTP $http_code — " . number_format(strlen($response ?? '')) . " bytes");
+
     if ($curl_error) {
         error_log("CURL Error ($curl_errno): $curl_error");
-        throw new RuntimeException('Connection error: ' . $curl_error);
+        throw new RuntimeException('Error de conexión: ' . $curl_error);
     }
-    
-    // Decodificar respuesta
+
     $data = json_decode($response, true);
     if ($data === null) {
         error_log("JSON decode error: " . json_last_error_msg());
         error_log("Response preview: " . substr($response, 0, 500));
-        throw new RuntimeException('Invalid JSON response from API');
+        throw new RuntimeException('Respuesta inválida de la API de Claude.');
     }
-    
-    // Manejar errores HTTP
+
     if ($http_code !== 200) {
         $error_msg = $data['error']['message'] ?? 'API error';
         error_log("API Error: $error_msg");
         throw new RuntimeException($error_msg);
     }
-    
-    $stop_reason = $data['stop_reason'] ?? '';
-    error_log("Stop reason: $stop_reason");
-    
-    // Buscar archivos generados
-    $files = extract_generated_files($data['content'] ?? []);
-    
-    if (!empty($files)) {
-        error_log("Files detected: " . count($files));
-        
-        // Descargar archivos .docx
-        $downloaded = [];
-        foreach ($files as $file) {
-            $ext = strtolower(pathinfo($file['filename'], PATHINFO_EXTENSION));
-            if ($ext === 'docx') {
-                error_log("Downloading: {$file['filename']}");
-                $local_path = download_file_from_claude($file['file_id'], $file['filename']);
-                if ($local_path) {
-                    $downloaded[] = [
-                        'filename' => $file['filename'],
-                        'path' => $local_path,
-                        'url' => 'download.php?file=' . urlencode(basename($local_path))
-                    ];
-                    error_log("Downloaded successfully: {$file['filename']}");
-                } else {
-                    error_log("Download failed: {$file['filename']}");
-                }
-            } else {
-                error_log("Skipping non-DOCX file: {$file['filename']}");
-            }
-        }
-        
-        if (!empty($downloaded)) {
-            error_log("=== SUCCESS: All files downloaded in {$elapsed_time}s ===");
-            return [
-                'success' => true,
-                'type' => 'files',
-                'files' => $downloaded,
-                'message' => 'Documento generado exitosamente'
-            ];
-        } else {
-            error_log("WARNING: Files detected but none downloaded");
-        }
-    } else {
-        error_log("No files detected in response");
+
+    // Loguear tokens
+    if (!empty($data['usage'])) {
+        $u = $data['usage'];
+        error_log("Tokens — input: " . ($u['input_tokens'] ?? 0) .
+                  ", output: " . ($u['output_tokens'] ?? 0) .
+                  ", cache_read: " . ($u['cache_read_input_tokens'] ?? 0));
     }
-    
-    // Si no hay archivos, extraer texto
-    $text = '';
-    foreach ($data['content'] as $block) {
+
+    error_log("Stop reason: " . ($data['stop_reason'] ?? 'unknown'));
+
+    // ── Extraer texto de la respuesta ────────────────────────────────────────
+    $raw_text = '';
+    foreach ($data['content'] ?? [] as $block) {
         if (($block['type'] ?? '') === 'text') {
-            $text .= $block['text'];
+            $raw_text .= $block['text'];
         }
     }
-    
-    if ($text) {
-        error_log("Text response received (no files generated)");
-        error_log("=== COMPLETED in {$elapsed_time}s ===");
-        return [
-            'success' => true,
-            'type' => 'text',
-            'content' => $text
-        ];
-    }
-    
-    // Si no hay archivos ni texto
-    error_log("=== FAILURE: No files or text in response ===");
-    throw new RuntimeException('Claude no generó ningún documento ni texto en la respuesta.');
-}
 
-function extract_generated_files(array $content): array {
-    $files = [];
-    
-    foreach ($content as $block) {
-        $block_type = $block['type'] ?? '';
-        
-        // Buscar bash_code_execution_tool_result (respuesta de ejecución de código)
-        if ($block_type === 'bash_code_execution_tool_result') {
-            // La estructura es: block -> content -> content (array)
-            if (isset($block['content']['content']) && is_array($block['content']['content'])) {
-                foreach ($block['content']['content'] as $item) {
-                    if (($item['type'] ?? '') === 'bash_code_execution_output' && !empty($item['file_id'])) {
-                        $file_id = $item['file_id'];
-                        
-                        // Intentar extraer nombre de archivo del stdout
-                        $stdout = $block['content']['stdout'] ?? '';
-                        $filename = extract_filename_from_stdout($stdout, $file_id);
-                        
-                        $files[] = [
-                            'file_id' => $file_id,
-                            'filename' => $filename
-                        ];
-                        
-                        error_log("Found file: $filename (ID: $file_id)");
-                    }
-                }
-            }
-        }
+    if (!$raw_text) {
+        throw new RuntimeException('Claude no devolvió ningún texto en la respuesta.');
     }
-    
-    error_log("Total files found: " . count($files));
-    return $files;
-}
 
-function extract_filename_from_stdout(string $stdout, string $file_id): string {
-    // Buscar archivos .docx en el stdout
-    if (preg_match('/([^\s\/]+\.docx)/i', $stdout, $matches)) {
-        return $matches[1];
+    // ── Limpiar markdown si Claude lo incluyó de todas formas ───────────────
+    $json_text = trim($raw_text);
+
+    // Quitar bloque ```json ... ``` o ``` ... ```
+    if (preg_match('/```(?:json)?\s*([\s\S]+?)\s*```/i', $json_text, $m)) {
+        $json_text = trim($m[1]);
     }
-    
-    // Nombre por defecto
-    return 'documento_' . substr($file_id, -8) . '.docx';
-}
 
-function download_file_from_claude(string $file_id, string $filename): ?string {
-    error_log("Downloading file: $file_id");
-    
-    $headers = [
-        'x-api-key: ' . ANTHROPIC_API_KEY,
-        'anthropic-version: 2023-06-01',
-        'anthropic-beta: files-api-2025-04-14'
+    // Asegurarse de que empieza con { (descartar texto previo si lo hay)
+    $brace_pos = strpos($json_text, '{');
+    if ($brace_pos === false) {
+        error_log("No JSON object found in response: " . substr($json_text, 0, 300));
+        throw new RuntimeException('Claude no devolvió un objeto JSON válido.');
+    }
+    if ($brace_pos > 0) {
+        $json_text = substr($json_text, $brace_pos);
+    }
+
+    // ── Validar JSON ─────────────────────────────────────────────────────────
+    $json_decoded = json_decode($json_text, true);
+    if ($json_decoded === null) {
+        error_log("Invalid JSON from Claude: " . substr($json_text, 0, 500));
+        throw new RuntimeException('Claude devolvió JSON malformado. Detalle: ' . json_last_error_msg());
+    }
+
+    // ── Guardar JSON en /casos/ ──────────────────────────────────────────────
+    $casos_dir = __DIR__ . '/casos';
+    if (!is_dir($casos_dir)) {
+        mkdir($casos_dir, 0755, true);
+    }
+
+    $raw_name      = $json_decoded['_meta']['output_filename'] ?? 'demanda.docx';
+    $safe_base     = preg_replace('/[^a-zA-Z0-9_\-]/', '_', pathinfo($raw_name, PATHINFO_FILENAME));
+    $json_basename = time() . '_' . strtolower($safe_base) . '.json';
+    $json_path     = $casos_dir . '/' . $json_basename;
+
+    file_put_contents($json_path, $json_text);
+    error_log("JSON saved: $json_path (" . strlen($json_text) . " bytes)");
+
+    // ── Generar .docx con Node.js ────────────────────────────────────────────
+    $docx_path = generar_docx_desde_json($json_path);
+
+    if (!$docx_path) {
+        throw new RuntimeException('Error al generar el documento .docx con Node.js. Revisa el log del servidor.');
+    }
+
+    $docx_filename = basename($docx_path);
+    error_log("=== SUCCESS: DOCX generated in {$elapsed}s — $docx_filename ===");
+
+    return [
+        'success'    => true,
+        'type'       => 'files',
+        'files'      => [[
+            'filename' => $docx_filename,
+            'path'     => $docx_path,
+            'url'      => 'download.php?file=' . urlencode($docx_filename),
+        ]],
+        'json_saved' => $json_basename,
+        'message'    => 'Documento generado exitosamente',
     ];
-    
-    // Descargar contenido
-    $ch = curl_init('https://api.anthropic.com/v1/files/' . $file_id . '/content');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => $headers,
-        CURLOPT_TIMEOUT => 120,
-        CURLOPT_SSL_VERIFYPEER => true,
+}
+
+/**
+ * Ejecuta generar_demanda.js con Node.js.
+ * Argumentos: <json_path> <output_dir>
+ * El script imprime: "Demanda creada exitosamente: <filename>"
+ *
+ * @return string|null  Path absoluto del .docx generado, o null en error.
+ */
+function generar_docx_desde_json(string $json_path): ?string {
+    $script_path   = __DIR__ . '/generar_demanda.js';
+    $downloads_dir = __DIR__ . '/downloads';
+
+    if (!is_dir($downloads_dir)) {
+        mkdir($downloads_dir, 0755, true);
+    }
+
+    // Rutas candidatas de node según sistema operativo
+    // SiteGround y hosting compartido Linux suelen tener node en /usr/local/bin o ~/.nvm
+    $is_windows = PHP_OS_FAMILY === 'Windows';
+
+    $node_candidates = $is_windows ? [
+        'C:\\Program Files\\nodejs\\node.exe',
+        'C:\\Program Files (x86)\\nodejs\\node.exe',
+        'node',
+        'C:\\nvm4w\\nodejs\\node.exe',
+    ] : [
+        '/usr/bin/node',
+        '/usr/local/bin/node',
+        '/usr/local/nodejs/bin/node',       // SiteGround instalación manual
+        '/opt/nodejs/bin/node',             // SiteGround alternativo
+        '/opt/alt/node20/usr/bin/node',     // CloudLinux / cPanel
+        '/opt/alt/node18/usr/bin/node',
+        '/opt/alt/node16/usr/bin/node',
+        '/home/' . get_current_user() . '/.nvm/versions/node/v20/bin/node',  // nvm usuario
+        '/home/' . get_current_user() . '/.nvm/versions/node/v18/bin/node',
+        'node',                             // si está en PATH del proceso PHP
+    ];
+
+    // Encontrar el primer ejecutable disponible
+    $node_bin = null;
+    foreach ($node_candidates as $candidate) {
+        // Verificar existencia directa del archivo (más fiable que which/where)
+        if (file_exists($candidate) && is_executable($candidate)) {
+            $node_bin = $candidate;
+            break;
+        }
+    }
+
+    // Fallback: intentar resolverlo con which/where
+    if (!$node_bin) {
+        $which_cmd = $is_windows ? 'where node 2>NUL' : 'which node 2>/dev/null';
+        $which_out = shell_exec($which_cmd);
+        if ($which_out && trim($which_out) !== '') {
+            $node_bin = trim(explode("\n", $which_out)[0]);
+        }
+    }
+
+    if (!$node_bin) {
+        error_log("Node.js not found. Tried: " . implode(', ', $node_candidates));
+        return null;
+    }
+
+    error_log("Using node: $node_bin");
+
+    // Extender el PATH para que node pueda encontrar sus propios módulos
+    $node_dir  = dirname($node_bin);
+    $extra_paths = [
+        $node_dir,
+        '/usr/bin',
+        '/usr/local/bin',
+        '/opt/nodejs/bin',
+        '/opt/alt/node20/usr/bin',
+    ];
+    $current_path = getenv('PATH') ?: '/usr/bin:/bin';
+    $env_path = implode(':', array_unique(array_merge($extra_paths, explode(':', $current_path))));
+
+    $env = array_merge($_ENV ?: [], [
+        'PATH'     => $env_path,
+        'HOME'     => getenv('HOME') ?: '/tmp',
+        'NODE_ENV' => 'production',
     ]);
-    
-    $file_content = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_error = curl_error($ch);
-    curl_close($ch);
-    
-    if ($curl_error) {
-        error_log("Download error: $curl_error");
+
+    // Construir el comando con paths absolutos
+    $cmd = sprintf(
+        '%s %s %s %s',
+        escapeshellarg($node_bin),
+        escapeshellarg($script_path),
+        escapeshellarg($json_path),
+        escapeshellarg($downloads_dir)
+    );
+
+    error_log("Running: $cmd (cwd: " . __DIR__ . ")");
+
+    $descriptors = [
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
+    ];
+
+    // proc_open con CWD = __DIR__ para que require('docx') encuentre node_modules/
+    $process = proc_open($cmd, $descriptors, $pipes, __DIR__, $env);
+
+    if (!is_resource($process)) {
+        error_log("proc_open failed");
         return null;
     }
-    
-    if ($http_code !== 200 || !$file_content) {
-        error_log("Download failed: HTTP $http_code");
-        return null;
+
+    fclose($pipes[0]);
+    $stdout = stream_get_contents($pipes[1]);
+    $stderr = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    $exit_code = proc_close($process);
+
+    $output = trim($stdout . "\n" . $stderr);
+    error_log("Node.js exit code: $exit_code");
+    error_log("Node.js output: " . ($output ?: '(empty)'));
+
+    if ($exit_code !== 0) {
+        error_log("Node.js failed with exit code $exit_code");
+        // No retornar null todavía — puede que el archivo igual se haya generado
     }
-    
-    // Guardar archivo
-    $upload_dir = __DIR__ . '/downloads';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
+
+    // Buscar el nombre del archivo en el output del script
+    // generar_demanda.js imprime: "Demanda creada exitosamente: <filename>"
+    if (preg_match('/Demanda creada exitosamente:\s*(.+\.docx)/i', $output, $m)) {
+        $reported_name = trim(basename($m[1]));
+
+        $candidate = $downloads_dir . '/' . $reported_name;
+        if (file_exists($candidate)) {
+            return $candidate;
+        }
+
+        // El script podría haber escrito en el CWD (__DIR__)
+        $alt = __DIR__ . '/' . $reported_name;
+        if (file_exists($alt)) {
+            $dest = $downloads_dir . '/' . $reported_name;
+            rename($alt, $dest);
+            return $dest;
+        }
     }
-    
-    $safe_filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename);
-    $local_path = $upload_dir . '/' . time() . '_' . $safe_filename;
-    
-    if (file_put_contents($local_path, $file_content) === false) {
-        error_log("Failed to save file");
-        return null;
+
+    // Fallback: el .docx más reciente en downloads_dir (creado en los últimos 90s)
+    $files = glob($downloads_dir . '/*.docx');
+    if ($files) {
+        usort($files, fn($a, $b) => filemtime($b) - filemtime($a));
+        if (time() - filemtime($files[0]) < 90) {
+            return $files[0];
+        }
     }
-    
-    error_log("File saved: $local_path (" . strlen($file_content) . " bytes)");
-    return $local_path;
+
+    error_log("Could not locate generated .docx — Node output was: " . substr($output, 0, 500));
+    return null;
 }
