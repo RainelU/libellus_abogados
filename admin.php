@@ -1,7 +1,7 @@
 <?php
 /**
  * admin.php — Panel de configuración de Libellus
- * Acceso restringido: solo usuarios autenticados con sesión activa.
+ * Acceso restringido: solo usuarios autenticados con sesión activa Y rol ADMIN.
  * La URL no está enlazada desde ningún lugar público.
  */
 session_start();
@@ -10,8 +10,15 @@ if (!isset($_SESSION['authorized_email'])) {
     exit;
 }
 
+// Solo ADMIN puede acceder
+if (($_SESSION['user_role'] ?? 'USUARIO') !== 'ADMIN') {
+    http_response_code(403);
+    exit('Acceso denegado.');
+}
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/config_override.php';
+require_once __DIR__ . '/generation_log.php';
 
 $success_msg = '';
 $error_msg   = '';
@@ -202,11 +209,60 @@ PHPFILE;
             background: #14243f !important;
             border-color: #14243f !important;
         }
+
+        /* ── Tabla de historial ───────────────────────────────────── */
+        .history-table {
+            font-family: 'Inter', sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .history-table thead tr {
+            background: #f5f2eb;
+            border-bottom: 2px solid var(--lib-border, #ddd8cc);
+        }
+        .history-table thead th {
+            color: var(--lib-navy, #1a2f52);
+            font-size: .72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding: .65rem 1rem;
+            white-space: nowrap;
+            border: none;
+        }
+        .history-table tbody tr {
+            border-bottom: 1px solid var(--lib-border, #ddd8cc);
+            transition: background .12s;
+        }
+        .history-table tbody tr:last-child { border-bottom: none; }
+        .history-table tbody tr:hover { background: #faf7f0; }
+        .history-table tbody td {
+            padding: .6rem 1rem;
+            vertical-align: middle;
+            border: none;
+            color: var(--lib-text, #1a2f52);
+        }
+        .history-date { color: var(--lib-muted, #6b7280); }
+        .history-filename {
+            display: inline-block;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .history-model {
+            background: #f0f4fa;
+            color: var(--lib-navy, #1a2f52);
+            border-radius: 4px;
+            padding: .1rem .4rem;
+            font-size: .72rem;
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-5" style="max-width:680px">
+<div class="container py-5" style="max-width:80%">
 
     <!-- Header -->
     <div class="mb-4 admin-header">
@@ -313,6 +369,103 @@ PHPFILE;
         </div>
 
     </form>
+
+    <!-- ── Historial de generaciones ─────────────────────────────── -->
+    <?php
+    $log_entries = read_generation_log();
+    ?>
+    <hr class="section-divider mt-4">
+
+    <div class="mb-3 d-flex align-items-center justify-content-between">
+        <div>
+            <span class="small fw-semibold" style="color:var(--lib-navy,#1a2f52)">
+                <i class="bi bi-clock-history me-1"></i> Historial de generaciones
+            </span>
+            <p class="text-secondary small mb-0 mt-1">
+                Últimas <?= count($log_entries) ?> generaciones registradas.
+            </p>
+        </div>
+        <?php if (!empty($log_entries)): ?>
+        <span class="admin-badge">
+            <?= count($log_entries) ?> registros
+        </span>
+        <?php endif; ?>
+    </div>
+
+    <?php if (empty($log_entries)): ?>
+    <div class="card rounded-3 p-4 text-center">
+        <i class="bi bi-inbox" style="font-size:2rem;color:var(--lib-muted,#6b7280)"></i>
+        <p class="text-secondary small mt-2 mb-0">Aún no hay generaciones registradas.</p>
+    </div>
+    <?php else: ?>
+    <div class="card rounded-3 p-0 mb-4" style="overflow:hidden">
+        <div style="overflow-x:auto">
+            <table class="table table-sm mb-0 history-table">
+                <thead>
+                    <tr>
+                        <th>Fecha y hora</th>
+                        <th>Documento</th>
+                        <th>Usuario</th>
+                        <th class="text-end">Tokens entrada</th>
+                        <th class="text-end">Tokens salida</th>
+                        <th class="text-end">Total tokens</th>
+                        <th class="text-end">Tiempo</th>
+                        <th>Modelo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($log_entries as $entry): ?>
+                <?php
+                    $total_tokens = ($entry['input_tokens'] ?? 0) + ($entry['output_tokens'] ?? 0);
+                    $secs = (float)($entry['elapsed'] ?? 0);
+                    if ($secs >= 60) {
+                        $m = floor($secs / 60);
+                        $s = round($secs % 60);
+                        $elapsed_fmt = "{$m}m {$s}s";
+                    } else {
+                        $elapsed_fmt = round($secs, 1) . 's';
+                    }
+                    $date_fmt = '';
+                    if (!empty($entry['generated_at'])) {
+                        $dt = new DateTime($entry['generated_at']);
+                        $date_fmt = $dt->format('d/m/Y H:i:s');
+                    }
+                ?>
+                <tr>
+                    <td class="text-nowrap small">
+                        <span class="history-date"><?= htmlspecialchars($date_fmt) ?></span>
+                    </td>
+                    <td class="small">
+                        <span class="history-filename" title="<?= htmlspecialchars($entry['filename'] ?? '') ?>">
+                            <i class="bi bi-file-earmark-word me-1" style="color:#2b579a"></i>
+                            <?= htmlspecialchars($entry['filename'] ?? '—') ?>
+                        </span>
+                    </td>
+                    <td class="small text-nowrap">
+                        <?= htmlspecialchars($entry['email'] ?? '—') ?>
+                    </td>
+                    <td class="text-end small text-nowrap">
+                        <?= number_format($entry['input_tokens'] ?? 0, 0, ',', '.') ?>
+                    </td>
+                    <td class="text-end small text-nowrap">
+                        <?= number_format($entry['output_tokens'] ?? 0, 0, ',', '.') ?>
+                    </td>
+                    <td class="text-end small text-nowrap fw-semibold">
+                        <?= number_format($total_tokens, 0, ',', '.') ?>
+                    </td>
+                    <td class="text-end small text-nowrap">
+                        <?= htmlspecialchars($elapsed_fmt) ?>
+                    </td>
+                    <td class="small">
+                        <code class="history-model"><?= htmlspecialchars($entry['model'] ?? '—') ?></code>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <?php endif; ?>
 
 </div>
 

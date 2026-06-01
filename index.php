@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         try {
-            $result = call_claude($skill_id, $pdf_file_ids);
+            $result = call_claude($skill_id, $pdf_file_ids, $_SESSION['authorized_email'] ?? '');
 
             if ($result['type'] === 'files') {
                 echo json_encode([
@@ -148,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card rounded-3 px-4 py-3">
             <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-3">
+                    <?php if (($_SESSION['user_role'] ?? 'USUARIO') === 'ADMIN'): ?>
                     <div class="usage-stat">
                         <span class="usage-label"><i class="bi bi-arrow-down-circle me-1"></i>Tokens entrada</span>
                         <span class="usage-value" id="stat-input-tokens">—</span>
@@ -158,15 +159,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="usage-value" id="stat-output-tokens">—</span>
                     </div>
                     <div class="usage-divider"></div>
+                    <?php endif; ?>
                     <div class="usage-stat">
-                        <span class="usage-label"><i class="bi bi-clock me-1"></i>Tiempo</span>
+                        <span class="usage-label"><i class="bi bi-clock me-1"></i>Tiempo de generación</span>
                         <span class="usage-value" id="stat-elapsed">—</span>
                     </div>
                 </div>
+                <?php if (($_SESSION['user_role'] ?? 'USUARIO') === 'ADMIN'): ?>
                 <div class="usage-stat text-end">
                     <span class="usage-label"><i class="bi bi-cpu me-1"></i>Modelo</span>
                     <span class="usage-value usage-model" id="stat-model">—</span>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -174,6 +178,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Rol del usuario actual — controlado por el servidor, no modificable desde el cliente
+    window.LIBELLUS_USER_ROLE = <?= json_encode($_SESSION['user_role'] ?? 'USUARIO') ?>;
+</script>
 <script src="assets/app.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/config_override.php';
+require_once __DIR__ . '/generation_log.php';
 
 /**
  * Llama a Claude con los file_ids de los PDFs ya subidos a la Files API.
@@ -9,9 +10,10 @@ require_once __DIR__ . '/config_override.php';
  *
  * @param  string $skill_id      ID del skill seleccionado en la UI
  * @param  array  $pdf_file_ids  IDs de la Files API de Anthropic
- * @return array  ['success', 'type', 'files', 'json_saved', 'message']
+ * @param  string $user_email    Email del usuario que genera (para el log)
+ * @return array  ['success', 'type', 'files', 'json_saved', 'message', 'usage', 'elapsed', 'model_used']
  */
-function call_claude(string $skill_id, array $pdf_file_ids): array {
+function call_claude(string $skill_id, array $pdf_file_ids, string $user_email = ''): array {
     ini_set('memory_limit', '2G');
     set_time_limit(0);
     ini_set('max_execution_time', 0);
@@ -235,7 +237,19 @@ PROMPT;
     }
 
     $docx_filename = basename($docx_path);
+    $active_model  = defined('ADMIN_CLAUDE_MODEL') && ADMIN_CLAUDE_MODEL ? ADMIN_CLAUDE_MODEL : CLAUDE_MODEL;
     error_log("=== SUCCESS: DOCX generated in {$elapsed}s — $docx_filename ===");
+
+    // ── Registrar en el log de generaciones ──────────────────────────────────
+    log_generation([
+        'filename'      => $docx_filename,
+        'email'         => $user_email,
+        'model'         => $active_model,
+        'input_tokens'  => $usage_data['input_tokens']  ?? 0,
+        'output_tokens' => $usage_data['output_tokens'] ?? 0,
+        'elapsed'       => $elapsed,
+        'generated_at'  => (new DateTime('now', new DateTimeZone('America/Santiago')))->format('c'),
+    ]);
 
     return [
         'success'    => true,
@@ -249,7 +263,7 @@ PROMPT;
         'message'    => 'Documento generado exitosamente',
         'usage'      => $usage_data,
         'elapsed'    => $elapsed,
-        'model_used' => defined('ADMIN_CLAUDE_MODEL') && ADMIN_CLAUDE_MODEL ? ADMIN_CLAUDE_MODEL : CLAUDE_MODEL,
+        'model_used' => $active_model,
     ];
 }
 

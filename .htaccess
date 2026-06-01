@@ -1,7 +1,13 @@
 DirectoryIndex index.php
 
 # Bloquear acceso directo a archivos de configuración sensibles
-<FilesMatch "^(config\.php|config_override\.php)$">
+<FilesMatch "^(config\.php|config_override\.php|generation_log\.php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Bloquear acceso directo al log de generaciones
+<FilesMatch "^generation_log\.json$">
     Order allow,deny
     Deny from all
 </FilesMatch>

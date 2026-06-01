@@ -1,0 +1,5 @@
+# Bloquear acceso directo al log de generaciones
+<FilesMatch "^generation_log\.json$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
