@@ -1,0 +1,65 @@
+[18-May-2026 16:55:19 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:55:22 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:55:25 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:55:27 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:55:46 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:56:12 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:56:17 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:56:17 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:57:57 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:58:01 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 16:58:03 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 17:00:42 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 17:01:09 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 17:02:26 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 17:02:38 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 12
+[18-May-2026 17:08:33 UTC] PHP Warning:  require_once(/home/customer/www/app.libellus.cl/public_html/claude.php): Failed to open stream: No such file or directory in /home/customer/www/app.libellus.cl/public_html/index.php on line 14
+[18-May-2026 17:08:33 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/app.libellus.cl/public_html/claude.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/app.libellus.cl/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/app.libellus.cl/public_html/index.php on line 14

@@ -1,0 +1,214 @@
+/*
+ * libellus-theme.css — Overlay visual Libellus para index.php
+ *
+ * Para revertir: eliminar en index.php la línea:
+ *   <link rel="stylesheet" href="assets/libellus-theme.css">
+ *
+ * Este archivo no modifica style.css ni ningún otro original.
+ * Solo pisa variables y clases específicas del layout de index.php.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+/* ── Tokens ───────────────────────────────────────────────────────── */
+:root {
+  --lib-bg:       #f2ede4;
+  --lib-surface:  #ffffff;
+  --lib-navy:     #1a2f52;
+  --lib-gold:     #c8a84b;
+  --lib-border:   #ddd8cc;
+  --lib-text:     #1a2f52;
+  --lib-muted:    #6b7280;
+  --lib-radius:   12px;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+body {
+  background: var(--lib-bg) !important;
+  color: var(--lib-text) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* ── Header — título y subtítulo ──────────────────────────────────── */
+.container > .mb-4 {
+  text-align: center !important;
+}
+
+.container > .mb-4 h1 {
+  font-family: 'EB Garamond', Georgia, serif !important;
+  font-size: 2.6rem !important;
+  font-weight: 400 !important;
+  color: var(--lib-navy) !important;
+  letter-spacing: -0.5px !important;
+  line-height: 1.1 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Línea dorada bajo el título */
+.container > .mb-4 h1::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 2px;
+  background: var(--lib-gold);
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+.container > .mb-4 p {
+  color: var(--lib-muted) !important;
+  font-size: 0.875rem !important;
+  margin-top: 0.75rem !important;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────── */
+.card {
+  background: var(--lib-surface) !important;
+  border: 1px solid var(--lib-border) !important;
+  border-radius: var(--lib-radius) !important;
+  box-shadow: 0 2px 16px rgba(26, 47, 82, 0.07) !important;
+}
+
+/* ── Labels numerados (1. Skill, 2. Archivos) ─────────────────────── */
+.card {
+  counter-reset: lib-section;
+}
+
+.card > .mb-3 {
+  counter-increment: lib-section;
+}
+
+.card > .mb-3 > label.form-label {
+  color: var(--lib-navy) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+}
+
+.card > .mb-3 > label.form-label::before {
+  content: counter(lib-section) ".  ";
+  color: var(--lib-navy);
+  font-weight: 600;
+}
+
+/* ── Select ───────────────────────────────────────────────────────── */
+.form-select {
+  border-color: var(--lib-border) !important;
+  border-radius: 8px !important;
+  color: var(--lib-text) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9rem !important;
+}
+
+.form-select:focus {
+  border-color: var(--lib-gold) !important;
+  box-shadow: 0 0 0 3px rgba(200, 168, 75, 0.18) !important;
+}
+
+/* ── Zona de adjuntos — wrapper en columna ────────────────────────── */
+div:has(> #attach-btn) {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0.5rem !important;
+}
+
+/* ── Botón adjuntar — aspecto drop zone ───────────────────────────── */
+#attach-btn {
+  width: 100% !important;
+  padding: 1.75rem 1rem !important;
+  border: 2px dashed var(--lib-border) !important;
+  border-radius: 8px !important;
+  background: var(--lib-surface) !important;
+  color: var(--lib-text) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  transition: border-color 0.2s ease, background 0.2s ease !important;
+}
+
+#attach-btn .bi-paperclip {
+  display: none !important;
+}
+
+#attach-btn::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231a2f52' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-bottom: 0.15rem;
+}
+
+#attach-btn:hover {
+  border-color: var(--lib-gold) !important;
+  background: #faf7f0 !important;
+}
+
+/* ── Archivos adjuntos — filas en vez de badges ───────────────────── */
+#attached-files {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0.4rem !important;
+  width: 100% !important;
+}
+
+.file-badge {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  background: var(--lib-surface) !important;
+  border: 1px solid var(--lib-border) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 0.85rem !important;
+  color: var(--lib-text) !important;
+  font-size: 0.82rem !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  white-space: normal !important;
+}
+
+.file-badge-remove {
+  color: var(--lib-muted) !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+}
+
+.file-badge-remove:hover {
+  color: #dc2626 !important;
+}
+
+/* ── Botón generar ────────────────────────────────────────────────── */
+#generate-btn {
+  background: var(--lib-navy) !important;
+  border-color: var(--lib-navy) !important;
+  border-radius: 8px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  padding: 0.75rem !important;
+  letter-spacing: 0.01em !important;
+  color: #ffffff !important;
+}
+
+#generate-btn:hover:not(:disabled) {
+  background: #14243f !important;
+  border-color: #14243f !important;
+}
+
+#generate-btn:disabled {
+  background: var(--lib-border) !important;
+  border-color: var(--lib-border) !important;
+  color: var(--lib-muted) !important;
+}
+
+/* ── Alerta de error ──────────────────────────────────────────────── */
+.alert-danger {
+  background: #fef9ec !important;
+  border-color: var(--lib-gold) !important;
+  color: var(--lib-navy) !important;
+}

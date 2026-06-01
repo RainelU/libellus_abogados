@@ -1,0 +1,2 @@
+<?php
+// archivo desactivado
