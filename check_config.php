@@ -1,72 +1,96 @@
-<?php
-// Script de diagnóstico para verificar configuración de PHP y CURL
-
-echo "<h2>Configuración de PHP</h2>";
-echo "<pre>";
-echo "max_execution_time: " . ini_get('max_execution_time') . " segundos\n";
-echo "max_input_time: " . ini_get('max_input_time') . " segundos\n";
-echo "memory_limit: " . ini_get('memory_limit') . "\n";
-echo "default_socket_timeout: " . ini_get('default_socket_timeout') . " segundos\n";
-echo "upload_max_filesize: " . ini_get('upload_max_filesize') . "\n";
-echo "post_max_size: " . ini_get('post_max_size') . "\n";
-echo "</pre>";
-
-echo "<h2>Información de CURL</h2>";
-echo "<pre>";
-if (function_exists('curl_version')) {
-    $curl_info = curl_version();
-    echo "CURL version: " . $curl_info['version'] . "\n";
-    echo "SSL version: " . $curl_info['ssl_version'] . "\n";
-    echo "Protocols: " . implode(', ', $curl_info['protocols']) . "\n";
-} else {
-    echo "CURL no está disponible\n";
-}
-echo "</pre>";
-
-echo "<h2>Test de timeout CURL</h2>";
-echo "<pre>";
-$ch = curl_init('https://httpbin.org/delay/5');
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT => 0,
-    CURLOPT_TIMEOUT_MS => 0,
-    CURLOPT_NOSIGNAL => 1,
-]);
-
-$start = microtime(true);
-$result = curl_exec($ch);
-$time = microtime(true) - $start;
-$error = curl_error($ch);
-curl_close($ch);
-
-echo "Tiempo de ejecución: " . round($time, 2) . " segundos\n";
-if ($error) {
-    echo "Error: $error\n";
-} else {
-    echo "✓ Test exitoso - CURL puede hacer peticiones largas\n";
-}
-echo "</pre>";
-
-echo "<h2>Archivo php.ini en uso</h2>";
-echo "<pre>";
-echo php_ini_loaded_file() . "\n";
-echo "</pre>";
-
-echo "<h2>Cambios con ini_set()</h2>";
-echo "<pre>";
-echo "Intentando cambiar max_execution_time a 0...\n";
-$result = @ini_set('max_execution_time', 0);
-if ($result !== false) {
-    echo "✓ Cambio exitoso - nuevo valor: " . ini_get('max_execution_time') . "\n";
-} else {
-    echo "✗ No se pudo cambiar (puede estar en modo seguro)\n";
-}
-
-echo "\nIntentando cambiar default_socket_timeout a 0...\n";
-$result = @ini_set('default_socket_timeout', 0);
-if ($result !== false) {
-    echo "✓ Cambio exitoso - nuevo valor: " . ini_get('default_socket_timeout') . "\n";
-} else {
-    echo "✗ No se pudo cambiar\n";
-}
-echo "</pre>";
+<?php
+/**
+ * Verificación simple de config.php
+ * Uso: php check_config.php
+ */
+
+echo "=== Verificación de config.php ===\n\n";
+
+// 1. Verificar archivo existe
+$config_path = __DIR__ . '/config.php';
+echo "1. Archivo config.php\n";
+echo "   Path: $config_path\n";
+
+if (!file_exists($config_path)) {
+    echo "   ❌ NO EXISTE\n";
+    exit(1);
+}
+echo "   ✅ Existe\n";
+echo "   Size: " . filesize($config_path) . " bytes\n";
+echo "   Permisos: " . substr(sprintf('%o', fileperms($config_path)), -4) . "\n\n";
+
+// 2. Intentar cargar
+echo "2. Cargando config.php...\n";
+try {
+    require_once $config_path;
+    echo "   ✅ Cargado sin errores\n\n";
+} catch (Throwable $e) {
+    echo "   ❌ Error al cargar: " . $e->getMessage() . "\n";
+    exit(1);
+}
+
+// 3. Verificar constantes
+echo "3. Constantes definidas:\n";
+
+$required_constants = [
+    'ANTHROPIC_API_KEY',
+    'ENCRYPTION_KEY',
+    'CLAUDE_MODEL',
+    'GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET',
+    'SHEET_CSV_URL',
+    'JSON_FILE_REFERENCE',
+    'WORKER_SECRET',
+];
+
+foreach ($required_constants as $const) {
+    echo "   - $const: ";
+    
+    if (!defined($const)) {
+        echo "❌ NO DEFINIDA\n";
+        continue;
+    }
+    
+    $value = constant($const);
+    $length = strlen($value);
+    
+    // Mostrar info según tipo
+    if ($const === 'WORKER_SECRET') {
+        echo "✅ Definida ($length caracteres)";
+        if ($length < 20) {
+            echo " ⚠️ Muy corta (mínimo 20)";
+        }
+        echo "\n";
+    } elseif ($const === 'ANTHROPIC_API_KEY') {
+        echo "✅ Definida ($length caracteres)";
+        if ($length < 30) {
+            echo " ⚠️ Muy corta";
+        }
+        echo "\n";
+    } elseif (in_array($const, ['GOOGLE_CLIENT_SECRET', 'ENCRYPTION_KEY'])) {
+        echo "✅ Definida ($length caracteres)\n";
+    } else {
+        echo "✅ Definida: " . substr($value, 0, 50);
+        if ($length > 50) echo "...";
+        echo "\n";
+    }
+}
+
+echo "\n=== RESULTADO ===\n";
+
+if (defined('WORKER_SECRET')) {
+    $secret_len = strlen(WORKER_SECRET);
+    if ($secret_len >= 20) {
+        echo "✅ WORKER_SECRET configurado correctamente ($secret_len caracteres)\n";
+    } else {
+        echo "⚠️ WORKER_SECRET muy corto: $secret_len caracteres (mínimo 20)\n";
+        echo "   Valor actual: " . WORKER_SECRET . "\n";
+        echo "   Recomendado: wk_7f3a9b2e1d4c8f6a0e5b3d7c9a2f4e8b (43 caracteres)\n";
+    }
+} else {
+    echo "❌ WORKER_SECRET NO DEFINIDA\n";
+    echo "   Agregar a config.php:\n";
+    echo "   define('WORKER_SECRET', 'wk_7f3a9b2e1d4c8f6a0e5b3d7c9a2f4e8b');\n";
+}
+
+echo "\n";

@@ -1,7 +1,8 @@
 DirectoryIndex index.php
 
 # Bloquear acceso directo a archivos de configuración sensibles
-<FilesMatch "^(config\.php|config_override\.php|generation_log\.php)$">
+# worker.php NO está aquí — necesita ser accesible via curl interno (tiene su propio token de auth)
+<FilesMatch "^(config\.php|config_override\.php|generation_log\.php|job_queue\.php)$">
     Order allow,deny
     Deny from all
 </FilesMatch>

@@ -1,0 +1,3 @@
+# Bloquear acceso directo a archivos de jobs
+Order allow,deny
+Deny from all

@@ -7,7 +7,7 @@ if (!isset($_SESSION['authorized_email'])) {
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/skills.php';
-require_once __DIR__ . '/claude.php';
+require_once __DIR__ . '/job_queue.php';
 
 // ── Manejo de peticiones POST (AJAX) ─────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,19 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Generar demanda
+    // Encolar generación — responde en <1s con job_id
     if ($action === 'generate') {
-        @ini_set('max_execution_time', '0');
-        @ini_set('memory_limit', '2G');
-        @set_time_limit(0);
-        @apache_setenv('no-gzip', '1');
-        @ini_set('zlib.output_compression', '0');
-        @ini_set('implicit_flush', '1');
-        ob_implicit_flush(true);
-        header('Connection: keep-alive');
-        header('X-Accel-Buffering: no');
-
-        // Leer skill y file_ids de los PDFs ya subidos a la Files API de Anthropic
         $skill_id     = trim($_POST['skill']        ?? '');
         $pdf_ids_raw  = trim($_POST['pdf_file_ids'] ?? '');
         $pdf_file_ids = [];
@@ -48,43 +37,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['success' => false, 'error' => 'Seleccioná un skill antes de generar.']);
             exit;
         }
-
         if (empty($pdf_file_ids)) {
             echo json_encode(['success' => false, 'error' => 'Adjuntá al menos un PDF antes de generar.']);
             exit;
         }
 
-        try {
-            $result = call_claude($skill_id, $pdf_file_ids, $_SESSION['authorized_email'] ?? '');
+        // Crear job en la cola
+        $job_id = job_create([
+            'skill_id'     => $skill_id,
+            'pdf_file_ids' => $pdf_file_ids,
+            'user_email'   => $_SESSION['authorized_email'] ?? '',
+        ]);
 
-            if ($result['type'] === 'files') {
-                echo json_encode([
-                    'success' => true,
-                    'type'    => 'files',
-                    'files'   => $result['files'],
-                    'message' => $result['message'],
-                    'usage'   => $result['usage']   ?? null,
-                    'elapsed' => $result['elapsed']  ?? null,
-                    'model'   => $result['model_used'] ?? null,
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => true,
-                    'type'    => 'text',
-                    'content' => $result['content'] ?? '',
-                    'usage'   => $result['usage']   ?? null,
-                    'elapsed' => $result['elapsed']  ?? null,
-                    'model'   => $result['model_used'] ?? null,
-                ]);
-            }
-        } catch (RuntimeException $e) {
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        }
+        // Lanzar worker en background (no bloqueante)
+        launch_worker($job_id);
+
+        echo json_encode(['success' => true, 'job_id' => $job_id]);
         exit;
     }
 
     echo json_encode(['success' => false, 'error' => 'Acción desconocida.']);
     exit;
+}
+
+/**
+ * Lanza worker.php en background sin bloquear el request actual.
+ * El worker corre con ignore_user_abort(true) para seguir procesando aunque curl corte.
+ */
+function launch_worker(string $job_id): void {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $dir    = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    $url    = $scheme . '://' . $host . $dir . '/worker.php';
+    $token  = WORKER_SECRET;
+    $params = http_build_query(['job_id' => $job_id, 'token' => $token]);
+
+    $ch = curl_init($url . '?' . $params);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,  // capturar output, NO imprimirlo
+        CURLOPT_NOBODY         => false,
+        CURLOPT_TIMEOUT_MS     => 5000,  // timeout 5s — worker sigue corriendo después
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 0,
+        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_FORBID_REUSE   => true,
+        CURLOPT_FRESH_CONNECT  => true,
+        CURLOPT_HTTPHEADER     => ['Connection: close', 'X-Worker-Token: ' . $token],
+    ]);
+
+    curl_exec($ch);
+    $errno = curl_errno($ch);
+    curl_close($ch);
+
+    if ($errno !== 0 && $errno !== CURLE_OPERATION_TIMEDOUT) {
+        error_log("[queue] curl failed (errno $errno), trying CLI fallback");
+        launch_worker_cli($job_id);
+    } else {
+        error_log("[queue] Launched worker for job: $job_id (curl errno: $errno)");
+    }
+}
+
+/**
+ * Fallback: lanzar worker via PHP CLI (solo para local/desarrollo).
+ */
+function launch_worker_cli(string $job_id): void {
+    $php_bin    = PHP_BINARY ?: 'php';
+    $worker     = escapeshellarg(__DIR__ . '/worker.php');
+    $job_id_arg = escapeshellarg($job_id);
+    $token_arg  = escapeshellarg(WORKER_SECRET);
+
+    if (PHP_OS_FAMILY === 'Windows') {
+        $cmd = "start /B \"\" \"{$php_bin}\" {$worker} {$job_id_arg} {$token_arg}";
+        pclose(popen($cmd, 'r'));
+    } else {
+        $cmd = "{$php_bin} {$worker} {$job_id_arg} {$token_arg} > /dev/null 2>&1 &";
+        exec($cmd);
+    }
+    error_log("[queue] Launched worker via CLI for job: $job_id");
 }
 ?><!DOCTYPE html>
 <html lang="es">
@@ -95,8 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Generador de Demandas — Libellus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/style.css">
-    <link rel="stylesheet" href="assets/libellus-theme.css">
+    <link rel="stylesheet" href="assets/style.css?v=<?= filemtime(__DIR__ . '/assets/style.css') ?>">
+    <link rel="stylesheet" href="assets/libellus-theme.css?v=<?= filemtime(__DIR__ . '/assets/libellus-theme.css') ?>">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
@@ -182,6 +212,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Rol del usuario actual — controlado por el servidor, no modificable desde el cliente
     window.LIBELLUS_USER_ROLE = <?= json_encode($_SESSION['user_role'] ?? 'USUARIO') ?>;
 </script>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=<?= filemtime(__DIR__ . '/assets/app.js') ?>"></script>
 </body>
 </html>

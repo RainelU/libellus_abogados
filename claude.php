@@ -4,6 +4,34 @@ require_once __DIR__ . '/config_override.php';
 require_once __DIR__ . '/generation_log.php';
 
 /**
+ * Wrapper para job queue — formato simplificado
+ * 
+ * @param array $params ['skill_id' => string, 'pdf_file_ids' => array]
+ * @return array ['success', 'filename', 'usage', 'model', 'error']
+ */
+function claude_generate_demand(array $params): array {
+    try {
+        $result = call_claude(
+            $params['skill_id'] ?? '',
+            $params['pdf_file_ids'] ?? [],
+            ''
+        );
+        
+        return [
+            'success'  => true,
+            'filename' => $result['files'][0]['filename'] ?? '',
+            'usage'    => $result['usage'] ?? [],
+            'model'    => $result['model_used'] ?? CLAUDE_MODEL,
+        ];
+    } catch (Throwable $e) {
+        return [
+            'success' => false,
+            'error'   => $e->getMessage(),
+        ];
+    }
+}
+
+/**
  * Llama a Claude con los file_ids de los PDFs ya subidos a la Files API.
  * Claude devuelve SOLO JSON (sin markdown, sin explicaciones).
  * El .docx se genera localmente ejecutando generar_demanda.js con Node.js.
@@ -240,16 +268,19 @@ PROMPT;
     $active_model  = defined('ADMIN_CLAUDE_MODEL') && ADMIN_CLAUDE_MODEL ? ADMIN_CLAUDE_MODEL : CLAUDE_MODEL;
     error_log("=== SUCCESS: DOCX generated in {$elapsed}s — $docx_filename ===");
 
-    // ── Registrar en el log de generaciones ──────────────────────────────────
-    log_generation([
-        'filename'      => $docx_filename,
-        'email'         => $user_email,
-        'model'         => $active_model,
-        'input_tokens'  => $usage_data['input_tokens']  ?? 0,
-        'output_tokens' => $usage_data['output_tokens'] ?? 0,
-        'elapsed'       => $elapsed,
-        'generated_at'  => (new DateTime('now', new DateTimeZone('America/Santiago')))->format('c'),
-    ]);
+    // Logging is handled by worker.php when called from queue
+    // For direct calls, log here
+    if ($user_email) {
+        log_generation([
+            'filename'      => $docx_filename,
+            'email'         => $user_email,
+            'model'         => $active_model,
+            'input_tokens'  => $usage_data['input_tokens']  ?? 0,
+            'output_tokens' => $usage_data['output_tokens'] ?? 0,
+            'elapsed'       => $elapsed,
+            'generated_at'  => (new DateTime('now', new DateTimeZone('America/Santiago')))->format('c'),
+        ]);
+    }
 
     return [
         'success'    => true,

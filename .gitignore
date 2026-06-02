@@ -5,3 +5,7 @@
 
 /downloads/*
 /casos/*
+
+# Archivos de jobs — ignorar JSON pero mantener .htaccess
+/jobs/*.json
+!/jobs/.htaccess
