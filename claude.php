@@ -206,6 +206,12 @@ PROMPT;
 
     error_log("Stop reason: " . ($data['stop_reason'] ?? 'unknown'));
 
+    // Si paró por max_tokens, el JSON está truncado — no intentar parsearlo
+    if (($data['stop_reason'] ?? '') === 'max_tokens') {
+        error_log("WARN: Claude stopped due to max_tokens — response is truncated");
+        throw new RuntimeException('Claude alcanzó el límite de tokens y la respuesta quedó incompleta. Intentá con documentos más cortos.');
+    }
+
     // ── Extraer texto de la respuesta ────────────────────────────────────────
     $raw_text = '';
     foreach ($data['content'] ?? [] as $block) {
@@ -236,10 +242,25 @@ PROMPT;
         $json_text = substr($json_text, $brace_pos);
     }
 
+    // Asegurarse de que termina con } (descartar texto posterior si lo hay)
+    $last_brace = strrpos($json_text, '}');
+    if ($last_brace !== false && $last_brace < strlen($json_text) - 1) {
+        $json_text = substr($json_text, 0, $last_brace + 1);
+    }
+
+    // Eliminar caracteres de control inválidos en JSON (excepto \t \n \r)
+    $json_text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $json_text);
+
     // ── Validar JSON ─────────────────────────────────────────────────────────
     $json_decoded = json_decode($json_text, true);
     if ($json_decoded === null) {
-        error_log("Invalid JSON from Claude: " . substr($json_text, 0, 500));
+        // Guardar respuesta completa para diagnóstico
+        $debug_file = __DIR__ . '/casos/debug_bad_json_' . time() . '.txt';
+        file_put_contents($debug_file, $json_text);
+        error_log("Invalid JSON from Claude — saved to: $debug_file");
+        error_log("JSON error: " . json_last_error_msg());
+        error_log("JSON preview (first 500): " . substr($json_text, 0, 500));
+        error_log("JSON tail (last 500): " . substr($json_text, -500));
         throw new RuntimeException('Claude devolvió JSON malformado. Detalle: ' . json_last_error_msg());
     }
 

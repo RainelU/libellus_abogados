@@ -1,107 +1,76 @@
 <?php
 /**
- * Worker — Procesador de jobs en background
- * Se ejecuta vía HTTP (curl desde index.php) o CLI (fallback).
+ * Worker — llamado desde el navegador vía fetch con keepalive:true
+ * Esto garantiza que el proceso PHP siga vivo aunque el usuario
+ * cierre la pestaña o cambie de página.
+ *
+ * El navegador llama: fetch('worker.php', {method:'POST', keepalive:true, body:...})
+ * y NO espera la respuesta (fire and forget).
  */
 
+// Lo primero: evitar que el proceso muera si el cliente se desconecta
 @ignore_user_abort(true);
 @set_time_limit(600);
 
-// Los requires MÍNIMOS antes de autenticar
+session_start();
+
+// Solo usuarios autenticados pueden disparar el worker
+if (!isset($_SESSION['authorized_email'])) {
+    http_response_code(401);
+    exit;
+}
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/job_queue.php';
 
-// ── Autenticación ─────────────────────────────────────────────────────────────
-
-$is_cli = php_sapi_name() === 'cli';
-$token  = $is_cli ? ($argv[2] ?? null) : ($_GET['token'] ?? null);
-$job_id = $is_cli ? ($argv[1] ?? null) : ($_GET['job_id'] ?? null);
+$job_id = $_POST['job_id'] ?? '';
+$token  = $_POST['token']  ?? '';
 
 if ($token !== WORKER_SECRET) {
-    if (!$is_cli) {
-        http_response_code(403);
-        header('Content-Type: application/json');
-        echo '{"error":"forbidden"}';
-    }
-    error_log('[worker] Auth failed — invalid token');
+    http_response_code(403);
+    error_log("[worker] Auth failed for job: $job_id");
     exit;
 }
 
 if (!$job_id) {
-    if (!$is_cli) {
-        http_response_code(400);
-        header('Content-Type: application/json');
-        echo '{"error":"missing job_id"}';
-    }
-    error_log('[worker] No job_id provided');
+    http_response_code(400);
     exit;
 }
 
-// ── Responder al cliente HTTP inmediatamente y soltar la conexión ─────────────
-
-if (!$is_cli) {
-    $body = '{"status":"accepted","job_id":"' . $job_id . '"}';
-    http_response_code(202);
-    header('Content-Type: application/json');
-    header('Connection: close');
-    header('Content-Length: ' . strlen($body));
-    echo $body;
-
-    if (function_exists('fastcgi_finish_request')) {
-        fastcgi_finish_request();
-        error_log('[worker] Connection closed via fastcgi_finish_request()');
-    } else {
-        if (ob_get_level() > 0) ob_end_flush();
-        flush();
-        error_log('[worker] Connection closed via flush()');
-    }
+// Verificar job existe y está pending
+$job = job_read($job_id);
+if (!$job || $job['status'] !== 'pending') {
+    http_response_code(200); // no error — ya procesado o no existe
+    exit;
 }
 
-// ── Verificar job ─────────────────────────────────────────────────────────────
+// Responder 202 inmediatamente y soltar la conexión
+http_response_code(202);
+header('Content-Type: application/json');
+header('Connection: close');
+$body = '{"status":"accepted"}';
+header('Content-Length: ' . strlen($body));
+echo $body;
+
+// Cerrar sesión y buffer para liberar al cliente
+session_write_close();
+if (ob_get_level() > 0) ob_end_flush();
+flush();
+
+// ── A partir de aquí el cliente ya no espera ─────────────────────────────────
+
+require_once __DIR__ . '/generation_log.php';
+require_once __DIR__ . '/claude.php';
 
 error_log("[worker] Starting job: $job_id");
-
-$job = job_read($job_id);
-
-if (!$job) {
-    error_log("[worker] Job not found: $job_id");
-    exit;
-}
-
-if ($job['status'] !== 'pending') {
-    error_log("[worker] Job already processed: $job_id (status: {$job['status']})");
-    exit;
-}
-
-// Marcar como running
-job_update($job_id, [
-    'status'     => 'running',
-    'started_at' => time(),
-]);
-
+job_update($job_id, ['status' => 'running', 'started_at' => time()]);
 error_log("[worker] Job $job_id marked as running");
 
-// ── Procesar ──────────────────────────────────────────────────────────────────
-
 try {
-    // Cargar dependencias solo cuando realmente las necesitamos
-    require_once __DIR__ . '/generation_log.php';
-    require_once __DIR__ . '/claude.php';
-
-    $skill_id     = $job['data']['skill_id']     ?? '';
-    $pdf_file_ids = $job['data']['pdf_file_ids'] ?? [];
-    $user_email   = $job['data']['user_email']   ?? '';
-
-    if (!$skill_id || empty($pdf_file_ids)) {
-        throw new Exception('Datos del job inválidos: skill_id o pdf_file_ids vacíos');
-    }
-
-    error_log("[worker] Calling Claude API for job: $job_id");
-
     $start  = microtime(true);
     $result = claude_generate_demand([
-        'skill_id'     => $skill_id,
-        'pdf_file_ids' => $pdf_file_ids,
+        'skill_id'     => $job['data']['skill_id'],
+        'pdf_file_ids' => $job['data']['pdf_file_ids'],
     ]);
     $elapsed = round(microtime(true) - $start, 2);
 
@@ -109,21 +78,16 @@ try {
         throw new Exception($result['error'] ?? 'Error desconocido en Claude API');
     }
 
-    // Registrar en log
-    $tz      = new DateTimeZone('America/Santiago');
-    $now     = new DateTime('now', $tz);
-
     log_generation([
         'filename'      => $result['filename'],
-        'email'         => $user_email,
+        'email'         => $job['data']['user_email'],
         'model'         => $result['model'] ?? CLAUDE_MODEL,
         'input_tokens'  => $result['usage']['input_tokens']  ?? 0,
         'output_tokens' => $result['usage']['output_tokens'] ?? 0,
         'elapsed'       => $elapsed,
-        'generated_at'  => $now->format('c'),
+        'generated_at'  => (new DateTime('now', new DateTimeZone('America/Santiago')))->format('c'),
     ]);
 
-    // Marcar como done
     job_update($job_id, [
         'status'      => 'done',
         'finished_at' => time(),
@@ -142,18 +106,10 @@ try {
     error_log("[worker] Job $job_id done in {$elapsed}s — {$result['filename']}");
 
 } catch (Throwable $e) {
-    $msg = $e->getMessage();
-    error_log("[worker] Job $job_id FAILED: $msg");
-    error_log("[worker] Trace: " . $e->getTraceAsString());
-
+    error_log("[worker] Job $job_id FAILED: " . $e->getMessage());
     job_update($job_id, [
         'status'      => 'error',
         'finished_at' => time(),
-        'error'       => $msg,
+        'error'       => $e->getMessage(),
     ]);
-}
-
-// Limpieza periódica (10% de probabilidad)
-if (rand(1, 10) === 1) {
-    job_cleanup();
 }

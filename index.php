@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Encolar generación — responde en <1s con job_id
+    // Encolar generación — el cron_worker.php la procesa automáticamente cada minuto
     if ($action === 'generate') {
         $skill_id     = trim($_POST['skill']        ?? '');
         $pdf_ids_raw  = trim($_POST['pdf_file_ids'] ?? '');
@@ -42,16 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Crear job en la cola
         $job_id = job_create([
             'skill_id'     => $skill_id,
             'pdf_file_ids' => $pdf_file_ids,
             'user_email'   => $_SESSION['authorized_email'] ?? '',
         ]);
 
-        // Lanzar worker en background (no bloqueante)
-        launch_worker($job_id);
-
+        error_log("[queue] Job created: $job_id — waiting for cron");
         echo json_encode(['success' => true, 'job_id' => $job_id]);
         exit;
     }
@@ -61,60 +58,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 /**
- * Lanza worker.php en background sin bloquear el request actual.
- * El worker corre con ignore_user_abort(true) para seguir procesando aunque curl corte.
+ * Procesa un job directamente en este mismo proceso PHP.
+ * Se llama DESPUÉS de fastcgi_finish_request(), así que el usuario
+ * ya recibió su respuesta y esta función puede tardar minutos sin problema.
  */
-function launch_worker(string $job_id): void {
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $dir    = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-    $url    = $scheme . '://' . $host . $dir . '/worker.php';
-    $token  = WORKER_SECRET;
-    $params = http_build_query(['job_id' => $job_id, 'token' => $token]);
+function process_job(string $job_id): void {
+    require_once __DIR__ . '/generation_log.php';
+    require_once __DIR__ . '/claude.php';
 
-    $ch = curl_init($url . '?' . $params);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,  // capturar output, NO imprimirlo
-        CURLOPT_NOBODY         => false,
-        CURLOPT_TIMEOUT_MS     => 5000,  // timeout 5s — worker sigue corriendo después
-        CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => 0,
-        CURLOPT_FOLLOWLOCATION => false,
-        CURLOPT_FORBID_REUSE   => true,
-        CURLOPT_FRESH_CONNECT  => true,
-        CURLOPT_HTTPHEADER     => ['Connection: close', 'X-Worker-Token: ' . $token],
-    ]);
+    error_log("[worker] Starting job: $job_id");
 
-    curl_exec($ch);
-    $errno = curl_errno($ch);
-    curl_close($ch);
-
-    if ($errno !== 0 && $errno !== CURLE_OPERATION_TIMEDOUT) {
-        error_log("[queue] curl failed (errno $errno), trying CLI fallback");
-        launch_worker_cli($job_id);
-    } else {
-        error_log("[queue] Launched worker for job: $job_id (curl errno: $errno)");
+    $job = job_read($job_id);
+    if (!$job || $job['status'] !== 'pending') {
+        error_log("[worker] Job $job_id not found or already processed");
+        return;
     }
-}
 
-/**
- * Fallback: lanzar worker via PHP CLI (solo para local/desarrollo).
- */
-function launch_worker_cli(string $job_id): void {
-    $php_bin    = PHP_BINARY ?: 'php';
-    $worker     = escapeshellarg(__DIR__ . '/worker.php');
-    $job_id_arg = escapeshellarg($job_id);
-    $token_arg  = escapeshellarg(WORKER_SECRET);
+    job_update($job_id, ['status' => 'running', 'started_at' => time()]);
+    error_log("[worker] Job $job_id marked as running");
 
-    if (PHP_OS_FAMILY === 'Windows') {
-        $cmd = "start /B \"\" \"{$php_bin}\" {$worker} {$job_id_arg} {$token_arg}";
-        pclose(popen($cmd, 'r'));
-    } else {
-        $cmd = "{$php_bin} {$worker} {$job_id_arg} {$token_arg} > /dev/null 2>&1 &";
-        exec($cmd);
+    try {
+        $start = microtime(true);
+
+        $result = claude_generate_demand([
+            'skill_id'     => $job['data']['skill_id'],
+            'pdf_file_ids' => $job['data']['pdf_file_ids'],
+        ]);
+
+        $elapsed = round(microtime(true) - $start, 2);
+
+        if (!$result['success']) {
+            throw new Exception($result['error'] ?? 'Error desconocido en Claude API');
+        }
+
+        // Registrar en log
+        log_generation([
+            'filename'      => $result['filename'],
+            'email'         => $job['data']['user_email'],
+            'model'         => $result['model'] ?? CLAUDE_MODEL,
+            'input_tokens'  => $result['usage']['input_tokens']  ?? 0,
+            'output_tokens' => $result['usage']['output_tokens'] ?? 0,
+            'elapsed'       => $elapsed,
+            'generated_at'  => (new DateTime('now', new DateTimeZone('America/Santiago')))->format('c'),
+        ]);
+
+        job_update($job_id, [
+            'status'      => 'done',
+            'finished_at' => time(),
+            'result'      => [
+                'type'    => 'files',
+                'files'   => [[
+                    'filename' => $result['filename'],
+                    'url'      => 'download.php?file=' . urlencode($result['filename']),
+                ]],
+                'usage'   => $result['usage']   ?? null,
+                'elapsed' => $elapsed,
+                'model'   => $result['model']   ?? CLAUDE_MODEL,
+            ],
+        ]);
+
+        error_log("[worker] Job $job_id done in {$elapsed}s — {$result['filename']}");
+
+    } catch (Throwable $e) {
+        error_log("[worker] Job $job_id FAILED: " . $e->getMessage());
+        job_update($job_id, [
+            'status'      => 'error',
+            'finished_at' => time(),
+            'error'       => $e->getMessage(),
+        ]);
     }
-    error_log("[queue] Launched worker via CLI for job: $job_id");
 }
 ?><!DOCTYPE html>
 <html lang="es">
@@ -209,8 +221,8 @@ function launch_worker_cli(string $job_id): void {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Rol del usuario actual — controlado por el servidor, no modificable desde el cliente
     window.LIBELLUS_USER_ROLE = <?= json_encode($_SESSION['user_role'] ?? 'USUARIO') ?>;
+    window.WORKER_SECRET      = <?= json_encode(WORKER_SECRET) ?>;
 </script>
 <script src="assets/app.js?v=<?= filemtime(__DIR__ . '/assets/app.js') ?>"></script>
 </body>

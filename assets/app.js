@@ -264,11 +264,11 @@
 
     function startPolling(jobId) {
         let pollCount = 0;
-        const MAX_POLLS = 180; // 180 × 4s = 12 minutos máximo
+        const MAX_POLLS = 450; // 450 × 4s = 30 minutos máximo
 
         showProgressMessage(
-            'Solicitud enviada',
-            'Claude está procesando el documento. Esto puede tomar entre 2 y 5 minutos.'
+            'Solicitud recibida',
+            'Tu documento entrará en procesamiento en menos de un minuto.'
         );
 
         pollingInterval = setInterval(async () => {
@@ -277,7 +277,7 @@
             if (pollCount > MAX_POLLS) {
                 stopPolling();
                 clearCurrentJob();
-                showError('La generación está tardando demasiado. Recargá la página e intentá nuevamente.');
+                showError('La generación está tardando más de lo esperado. Por favor intentá de nuevo.');
                 setLoading(false, false);
                 return;
             }
@@ -287,15 +287,20 @@
                 const data = await res.json();
 
                 switch (data.status) {
-                    case 'pending':
+                    case 'pending': {
+                        const waitSecs = pollCount * 4;
+                        const waitStr  = waitSecs >= 60
+                            ? `${Math.floor(waitSecs/60)}m ${waitSecs%60}s`
+                            : `${waitSecs}s`;
                         showProgressMessage(
                             'En cola...',
-                            'Tu solicitud está esperando procesamiento.'
+                            `Tu solicitud está en espera. El sistema la procesará automáticamente cuando sea tu turno. Tiempo de espera: ${waitStr}`
                         );
                         break;
+                    }
 
                     case 'running': {
-                        const secs = data.elapsed || 0;
+                        const secs    = data.elapsed || 0;
                         const timeStr = secs >= 60
                             ? `${Math.floor(secs / 60)}m ${Math.round(secs % 60)}s`
                             : `${secs}s`;
@@ -312,18 +317,29 @@
                         handleJobDone(data.result);
                         break;
 
-                    case 'error':
+                    case 'error': {
                         stopPolling();
                         clearCurrentJob();
-                        showError(data.error || 'Error al generar el documento.');
+                        // Mostrar error con botón de reintento
+                        const errMsg = data.error || 'Error al generar el documento.';
+                        const isConnection = errMsg.includes('Connection') || errMsg.includes('connection') 
+                                          || errMsg.includes('reset') || errMsg.includes('timeout');
+                        const hint = isConnection
+                            ? ' El servidor tuvo un problema de conexión. Podés intentar nuevamente.'
+                            : '';
+                        showError(errMsg + hint);
                         setLoading(false, false);
                         outputSection.classList.add('d-none');
+                        // Re-habilitar el botón para que puedan reintentar
+                        generateBtn.disabled = false;
+                        btnLabel.textContent = 'Generar Demanda';
                         break;
+                    }
 
                     case 'not_found':
                         stopPolling();
                         clearCurrentJob();
-                        showError('No se encontró el job. Intentá generar nuevamente.');
+                        showError('No se encontró la solicitud. Por favor generá nuevamente.');
                         setLoading(false, false);
                         outputSection.classList.add('d-none');
                         break;
@@ -426,20 +442,16 @@
         const jobId = getCurrentJob();
         if (!jobId) return;
 
-        // Verificar si el job todavía existe
         fetch(`job_status.php?id=${encodeURIComponent(jobId)}`)
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'pending' || data.status === 'running') {
-                    // Recuperar el polling
                     setLoading(true);
                     startPolling(jobId);
                 } else if (data.status === 'done') {
-                    // Mostrar el resultado
                     handleJobDone(data.result);
                     clearCurrentJob();
                 } else {
-                    // Error o not_found — limpiar
                     clearCurrentJob();
                 }
             })
